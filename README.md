@@ -28,7 +28,7 @@
 
 
 
-#2. Какому тегу соответствует коммит 85024d3?
+# 2. Какому тегу соответствует коммит 85024d3?
 
 ## git show 85024d3
 ## tag: v0.12.23
@@ -103,8 +103,8 @@
 >Use '--' to separate paths from revisions, like this:
 >'git <command> [<revision>...] -- [<file>...]'
 
-#4. Перечислите хеши и комментарии всех коммитов которые были сделаны между тегами v0.12.23 и v0.12.24.
-## git log --oneline v0.12.23  v0.12.24
+# 4. Перечислите хеши и комментарии всех коммитов которые были сделаны между тегами v0.12.23 и v0.12.24.
+## it log --oneline v0.12.23  v0.12.24
 
 >git log --oneline v0.12.23  v0.12.24
 >33ff1c03b (tag: v0.12.24) v0.12.24
@@ -157,7 +157,7 @@
 >86155e1c1 command/workspace delete: release lock after workspace removal warning (#24085)
 >e4809d6d8 Update CHANGELOG.md
 
-#5. Найдите коммит в котором была создана функция func providerSource, ее определение в коде выглядит так func providerSource(...) (вместо троеточего перечислены аргументы).
+# 5. Найдите коммит в котором была создана функция func providerSource, ее определение в коде выглядит так func providerSource(...) (вместо троеточего перечислены аргументы).
 
 ## 5e06e39fcc86bb622b962c87da84213d3331ddf8
 ## git log -SproviderSource --oneline
