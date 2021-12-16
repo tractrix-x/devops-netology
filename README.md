@@ -254,9 +254,9 @@
 # 6. Найдите все коммиты в которых была изменена функция globalPluginDirs.
 
 ## git log -SglobalPluginDirs --oneline
-35a058fb3 main: configure credentials from the CLI config file
-c0b176109 prevent log output during init
-8364383c3 Push plugin discovery down into command package
+>35a058fb3 main: configure credentials from the CLI config file
+>c0b176109 prevent log output during init
+>8364383c3 Push plugin discovery down into command package
 
 
 # 7. Кто автор функции synchronizedWriters?
@@ -264,12 +264,12 @@ c0b176109 prevent log output during init
 ## Author: Martin Atkins <mart@degeneration.co.uk>
 
 ## git log -SsynchronizedWriters --oneline
-bdfea50cc remove unused
-fd4f7eb0b remove prefixed io
-5ac311e2a main: synchronize writes to VT100-faker on Windows
+>bdfea50cc remove unused
+>fd4f7eb0b remove prefixed io
+>5ac311e2a main: synchronize writes to VT100-faker on Windows
 
 ##  git show 5ac311e2a
-commit 5ac311e2a91e381e2f52234668b49ba670aa0fe5
-Author: Martin Atkins <mart@degeneration.co.uk>
-Date:   Wed May 3 16:25:41 2017 -0700
-...
+>commit 5ac311e2a91e381e2f52234668b49ba670aa0fe5
+>Author: Martin Atkins <mart@degeneration.co.uk>
+>Date:   Wed May 3 16:25:41 2017 -0700
+>...
