@@ -1,10 +1,10 @@
 # devops-netology
-#Для выполнения заданий в этом разделе давайте склонируем репозиторий с исходным кодом терраформа https://github.com/hashicorp/terraform
-#В виде результата напишите текстом ответы на вопросы и каким образом эти ответы были получены.
+# Для выполнения заданий в этом разделе давайте склонируем репозиторий с исходным кодом терраформа https://github.com/hashicorp/terraform
+# В виде результата напишите текстом ответы на вопросы и каким образом эти ответы были получены.
 
-#1. Найдите полный хеш и комментарий коммита, хеш которого начинается на aefea.
-##$ git show aefea
-##aefead2207ef7e2aa5dc81a34aedf0cad4c32545
+# 1. Найдите полный хеш и комментарий коммита, хеш которого начинается на aefea.
+## $ git show aefea
+## aefead2207ef7e2aa5dc81a34aedf0cad4c32545
 
 >commit aefead2207ef7e2aa5dc81a34aedf0cad4c32545
 >Author: Alisdair McDiarmid <alisdair@users.noreply.github.com>
@@ -29,11 +29,13 @@
 
 
 #2. Какому тегу соответствует коммит 85024d3?
-##git show 85024d3
-##tag: v0.12.23
 
-#3. Сколько родителей у коммита b8d720? Напишите их хеши.
-##2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
+## git show 85024d3
+## tag: v0.12.23
+
+# 3. Сколько родителей у коммита b8d720? Напишите их хеши.
+
+## 2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
 
 >git show b8d720^
 >commit 56cd7859e05c36c06b56d013b55a252d0bb7e158
@@ -103,7 +105,7 @@
 >'git <command> [<revision>...] -- [<file>...]'
 
 #4. Перечислите хеши и комментарии всех коммитов которые были сделаны между тегами v0.12.23 и v0.12.24.
-##git log --oneline v0.12.23  v0.12.24
+## git log --oneline v0.12.23  v0.12.24
 
 >git log --oneline v0.12.23  v0.12.24
 >33ff1c03b (tag: v0.12.24) v0.12.24
@@ -157,9 +159,10 @@
 >e4809d6d8 Update CHANGELOG.md
 
 #5. Найдите коммит в котором была создана функция func providerSource, ее определение в коде выглядит так func providerSource(...) (вместо троеточего перечислены аргументы).
-##5e06e39fcc86bb622b962c87da84213d3331ddf8
-##git log -SproviderSource --oneline
-##git show 5e06e39fc
+
+## 5e06e39fcc86bb622b962c87da84213d3331ddf8
+## git log -SproviderSource --oneline
+## git show 5e06e39fc
 
 >git log -SproviderSource --oneline
 >5b266dd5c command: Remove the experimental "terraform add" command
@@ -248,24 +251,24 @@
 >
 
 
-#6. Найдите все коммиты в которых была изменена функция globalPluginDirs.
+# 6. Найдите все коммиты в которых была изменена функция globalPluginDirs.
 
-##git log -SglobalPluginDirs --oneline
+## git log -SglobalPluginDirs --oneline
 35a058fb3 main: configure credentials from the CLI config file
 c0b176109 prevent log output during init
 8364383c3 Push plugin discovery down into command package
 
 
-#7. Кто автор функции synchronizedWriters?
+# 7. Кто автор функции synchronizedWriters?
 
-##Author: Martin Atkins <mart@degeneration.co.uk>
+## Author: Martin Atkins <mart@degeneration.co.uk>
 
-##git log -SsynchronizedWriters --oneline
+## git log -SsynchronizedWriters --oneline
 bdfea50cc remove unused
 fd4f7eb0b remove prefixed io
 5ac311e2a main: synchronize writes to VT100-faker on Windows
 
-##git show 5ac311e2a
+##  git show 5ac311e2a
 commit 5ac311e2a91e381e2f52234668b49ba670aa0fe5
 Author: Martin Atkins <mart@degeneration.co.uk>
 Date:   Wed May 3 16:25:41 2017 -0700
