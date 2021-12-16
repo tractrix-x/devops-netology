@@ -34,8 +34,7 @@
 ## tag: v0.12.23
 
 # 3. Сколько родителей у коммита b8d720? Напишите их хеши.
-
-## 2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
+## у коммита b8d720 - 2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
 
 >git show b8d720^
 >commit 56cd7859e05c36c06b56d013b55a252d0bb7e158
@@ -197,7 +196,7 @@
 >18dd1bb4d Mildwonkey/tfconfig upgrade (#23670)
 >5e06e39fc Use registry alias to fetch providers
 >
->##git show 5e06e39fc
+>git show 5e06e39fc
 >commit 5e06e39fcc86bb622b962c87da84213d3331ddf8
 >Author: findkim <kngo@hashicorp.com>
 >Date:   Wed Nov 28 10:26:16 2018 -0600
@@ -262,7 +261,6 @@
 # 7. Кто автор функции synchronizedWriters?
 
 ## Author: Martin Atkins <mart@degeneration.co.uk>
-
 ## git log -SsynchronizedWriters --oneline
 >bdfea50cc remove unused
 >fd4f7eb0b remove prefixed io
