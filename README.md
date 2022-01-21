@@ -1,273 +1,270 @@
-# devops-netology
-# Для выполнения заданий в этом разделе давайте склонируем репозиторий с исходным кодом терраформа https://github.com/hashicorp/terraform
-# В виде результата напишите текстом ответы на вопросы и каким образом эти ответы были получены.
+#Домашнее задание к занятию "3.2. Работа в терминале, лекция 2"
 
-# 1. Найдите полный хеш и комментарий коммита, хеш которого начинается на aefea.
-## $ git show aefea
-## aefead2207ef7e2aa5dc81a34aedf0cad4c32545
+### 1. Какого типа команда cd? Попробуйте объяснить, почему она именно такого типа; опишите ход своих мыслей, если считаете что она могла бы быть другого типа.
 
->commit aefead2207ef7e2aa5dc81a34aedf0cad4c32545
->Author: Alisdair McDiarmid <alisdair@users.noreply.github.com>
->$ git show aefea
->Date:   Thu Jun 18 10:29:58 2020 -0400
->
->    Update CHANGELOG.md
->
->diff --git a/CHANGELOG.md b/CHANGELOG.md
->index 86d70e3e0..588d807b1 100644
->--- a/CHANGELOG.md
->+++ b/CHANGELOG.md
->@@ -27,6 +27,7 @@ BUG FIXES:
-> * backend/s3: Prefer AWS shared configuration over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Prefer ECS credentials over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Remove hardcoded AWS Provider messaging ([#25134](https://github.com/hashicorp/terraform/issues/25134))
->+* command: Fix bug with global `-v`/`-version`/`--version` flags introduced in 0.13.0beta2 [GH-25277]
-> * command/0.13upgrade: Fix `0.13upgrade` usage help text to include options ([#25127](https://github.com/hashicorp/terraform/issues/25127))
-> * command/0.13upgrade: Do not add source for builtin provider ([#25215](https://github.com/hashicorp/terraform/issues/25215))
-> * command/apply: Fix bug which caused Terraform to silently exit on Windows when using absolute plan path ([#25233](https://github.com/hashicorp/terraform/issues/25233))
+Команда cd относится к встроенным командам. Если бы cd была внешней командой, то при смене каталога пришлось бы вызывать новый bash.
+
+	bil@LAPTOP-GJ376PE7:~$ type -a cd uname : ls uname
+	cd is a shell builtin
+	uname is /usr/bin/uname
+	uname is /bin/uname
+	: is a shell builtin
+	ls is aliased to `ls --color=auto'
+	ls is /usr/bin/ls
+	ls is /bin/ls
+	uname is /usr/bin/uname
+	uname is /bin/uname
+
+### 2. Какая альтернатива без pipe команде grep <some_string> <some_file> | wc -l? man grep поможет в ответе на этот вопрос. Ознакомьтесь с документом о других подобных некорректных вариантах использования pipe.
+
+	bil@LAPTOP-GJ376PE7:~$ cat .profile
+	# ~/.profile: executed by the command interpreter for login shells.
+	# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+	# exists.
+	# see /usr/share/doc/bash/examples/startup-files for examples.
+	# the files are located in the bash-doc package.
+	
+	# the default umask is set in /etc/profile; for setting the umask
+	# for ssh logins, install and configure the libpam-umask package.
+	#umask 022
+	
+	# if running bash
+	if [ -n "$BASH_VERSION" ]; then
+		# include .bashrc if it exists
+		if [ -f "$HOME/.bashrc" ]; then
+			. "$HOME/.bashrc"
+		fi
+	fi
+	
+	# set PATH so it includes user's private bin if it exists
+	if [ -d "$HOME/bin" ] ; then
+		PATH="$HOME/bin:$PATH"
+	fi
+	
+	# set PATH so it includes user's private bin if it exists
+	if [ -d "$HOME/.local/bin" ] ; then
+		PATH="$HOME/.local/bin:$PATH"
+	fi
+	bil@LAPTOP-GJ376PE7:~$ grep fi .profile -c
+	10
+	bil@LAPTOP-GJ376PE7:~$ grep fi .profile | wc -l
+	10
+	bil@LAPTOP-GJ376PE7:~$
+
+### 3. Какой процесс с PID 1 является родителем для всех процессов в вашей виртуальной машине Ubuntu 20.04?
+
+	bil@LAPTOP-GJ376PE7:~$ pstree -p
+	init(1)─┬─init(8)───init(9)───bash(10)───pstree(83)
+			└─{init}(7)
+	bil@LAPTOP-GJ376PE7:~$
+
+### 4. Как будет выглядеть команда, которая перенаправит вывод stderr ls на другую сессию терминала?
+
+открыть сессию
+	
+	vagrant@vagrant:~$ ls -l \bil 2>/dev/pts/1
+	-bash: /dev/pts/1: Permission denied
+	vagrant@vagrant:~$ who
+	vagrant  pts/0        2022-01-20 18:45 (10.0.2.2)
+	vagrant@vagrant:~$
+	
+открыть другую сессию
+	
+	vagrant@vagrant:~$ who
+	vagrant  pts/0        2022-01-20 18:45 (10.0.2.2)
+	vagrant  pts/1        2022-01-20 18:46 (10.0.2.2)
+	vagrant@vagrant:~$
+
+### 5. Получится ли одновременно передать команде файл на stdin и вывести ее stdout в другой файл? Приведите работающий пример.
+
+Да, получится
+
+	vagrant@vagrant:~$ cat < .vbox_version > bil_vbox_version
+	vagrant@vagrant:~$ cat bil_vbox_version
+	6.1.24vagrant@vagrant:~$ cat .vbox_version
+	6.1.24vagrant@vagrant:~$
+
+### 6. Получится ли находясь в графическом режиме, вывести данные из PTY в какой-либо из эмуляторов TTY? Сможете ли вы наблюдать выводимые данные?
+	
+Выводимые данные будут видны
+
+	vagrant@vagrant:~$ echo $SSH_TTY
+	/dev/pts/0
+	vagrant@vagrant:~$ cat .profile > /dev/tt3
+	-bash: /dev/tt3: Permission denied
+	vagrant@vagrant:~$ ll /dev/tt3
+	ls: cannot access '/dev/tt3': No such file or directory
+	vagrant@vagrant:~$ ls /dev/tt3
+	ls: cannot access '/dev/tt3': No such file or directory
+	vagrant@vagrant:~$ cat .profile > /dev/pts/0
+	# ~/.profile: executed by the command interpreter for login shells.
+	# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+	# exists.
+	# see /usr/share/doc/bash/examples/startup-files for examples.
+	# the files are located in the bash-doc package.
+	
+	# the default umask is set in /etc/profile; for setting the umask
+	# for ssh logins, install and configure the libpam-umask package.
+	#umask 022
+	
+	# if running bash
+	if [ -n "$BASH_VERSION" ]; then
+		# include .bashrc if it exists
+		if [ -f "$HOME/.bashrc" ]; then
+			. "$HOME/.bashrc"
+		fi
+	fi
+	
+	# set PATH so it includes user's private bin if it exists
+	if [ -d "$HOME/bin" ] ; then
+		PATH="$HOME/bin:$PATH"
+	fi
+	
+	# set PATH so it includes user's private bin if it exists
+	if [ -d "$HOME/.local/bin" ] ; then
+		PATH="$HOME/.local/bin:$PATH"
+	fi
+	vagrant@vagrant:~$
+
+### 7. Выполните команду bash 5>&1. К чему она приведет? Что будет, если вы выполните echo netology > /proc/$$/fd/5? Почему так происходит?
+
+будет создан дескриптор 5 и перенаправлен на stdout
+
+	vagrant@vagrant:~$ bash 5>&1
+	
+"echo netology" будет перенаправлен в дескриптор 5, который удет в stdout
+
+	vagrant@vagrant:~$ echo netology > /proc/$$/fd/5
+	netology
+	vagrant@vagrant:~$
+
+### 8. Получится ли в качестве входного потока для pipe использовать только stderr команды, не потеряв при этом отображение stdout на pty? Напоминаем: по умолчанию через pipe передается только stdout команды слева от | на stdin команды справа. Это можно сделать, поменяв стандартные потоки местами через промежуточный новый дескриптор, который вы научились создавать в предыдущем вопросе.
+
+создан новый дескриптор 4 и перенаправлен в stderr
+
+	bash 4>&2
+	vagrant@vagrant:~$ ls bil.txt 4>&2 2>&1 1>&4 | grep no -c
+	1
+
+### 9. Что выведет команда cat /proc/$$/environ? Как еще можно получить аналогичный по содержанию вывод?
+
+Будут показаны переменные окружения
+аналог - env
+	
+	vagrant@vagrant:~$ cat /proc/$$/environ	SHELL=/bin/bashLANGUAGE=en_US:PWD=/home/vagrantLOGNAME=vagrantXDG_SESSION_TYPE=ttyMOTD_SHOWN=pamHOME=/home/vagrantLANG=en_US.UTF-8LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:SSH_CONNECTION=10.0.2.2 61629 10.0.2.15 22LESSCLOSE=/usr/bin/lesspipe %s %sXDG_SESSION_CLASS=userTERM=xterm-256colorLESSOPEN=| /usr/bin/lesspipe %sUSER=vagrantSHLVL=2XDG_SESSION_ID=2XDG_RUNTIME_DIR=/run/user/1000SSH_CLIENT=10.0.2.2 61629 22XDG_DATA_DIRS=/usr/local/share:/usr/share:/var/lib/snapd/desktopPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/binDBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/busSSH_TTY=/dev/pts/0_=/usr/bin/bashvagrant@vagrant:~$
+	
+	vagrant@vagrant:~$ env
+	SHELL=/bin/bash
+	LANGUAGE=en_US:
+	PWD=/home/vagrant
+	LOGNAME=vagrant
+	XDG_SESSION_TYPE=tty
+		MOTD_SHOWN=pam
+	HOME=/home/vagrant
+	LANG=en_US.UTF-8	LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+	SSH_CONNECTION=10.0.2.2 61629 10.0.2.15 22
+	LESSCLOSE=/usr/bin/lesspipe %s %s
+	XDG_SESSION_CLASS=user
+	TERM=xterm-256color
+	LESSOPEN=| /usr/bin/lesspipe %s
+	USER=vagrant
+	SHLVL=3
+	XDG_SESSION_ID=2
+	XDG_RUNTIME_DIR=/run/user/1000
+	SSH_CLIENT=10.0.2.2 61629 22
+	XDG_DATA_DIRS=/usr/local/share:/usr/share:/var/lib/snapd/desktop
+	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+	DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+	SSH_TTY=/dev/pts/0
+	_=/usr/bin/env
+	vagrant@vagrant:~$
+
+### 10. Используя man, опишите что доступно по адресам /proc/<PID>/cmdline, /proc/<PID>/exe.
+
+для адреса /proc/<PID>/exe
+символьная ссылка для адреса процесса
+
+	vagrant@vagrant:~$ man proc | nl | grep exe
+   192         /proc/[pid]/exe
+   193                Under Linux 2.2 and later, this file is a symbolic link containing the actual pathname of the executed command.  This
+   194                symbolic link can be dereferenced normally; attempting to open it will  open  the  executable.   You  can  even  type
+   195                /proc/[pid]/exe  to  run another copy of the same executable that is being run by process [pid].  If the pathname has
+   201                Under Linux 2.0 and earlier, /proc/[pid]/exe is a pointer to the binary which was executed, and appears as a symbolic
+
+для адреса /proc/<PID>/cmdline
+путь для исполняемого файла процесса
+
+	vagrant@vagrant:~$ man proc | nl | grep cmdline
+	18                    directories themselves remain visible).  Sensitive files such as /proc/[pid]/cmdline and  /proc/[pid]/status  are
+	156         /proc/[pid]/cmdline
+	1117         /proc/cmdline
+
+### 11. Узнайте, какую наиболее старшую версию набора инструкций SSE поддерживает ваш процессор с помощью /proc/cpuinfo.
+
+версия sse4_2
+
+	vagrant@vagrant:~$ grep sse /proc/cpuinfo
+	flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx fxsr_opt rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 hypervisor lahf_lm cmp_legacy cr8_legacy 3dnowprefetch ssbd vmmcall fsgsbase arat
+	flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx fxsr_opt rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 hypervisor lahf_lm cmp_legacy cr8_legacy 3dnowprefetch ssbd vmmcall fsgsbase arat
+	vagrant@vagrant:~$ cat /proc/cpuinfo | grep sse
+	flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx fxsr_opt rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 hypervisor lahf_lm cmp_legacy cr8_legacy 3dnowprefetch ssbd vmmcall fsgsbase arat
+	flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx fxsr_opt rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid extd_apicid tsc_known_freq pni ssse3 cx16 sse4_1 sse4_2 hypervisor lahf_lm cmp_legacy cr8_legacy 3dnowprefetch ssbd vmmcall fsgsbase arat
+	vagrant@vagrant:~$
+
+### 12. При открытии нового окна терминала и vagrant ssh создается новая сессия и выделяется pty. Это можно подтвердить командой tty, которая упоминалась в лекции 3.2. Однако:
+vagrant@netology1:~$ ssh localhost 'tty'
+not a tty
+Почитайте, почему так происходит, и как изменить поведение.
+
+Помоему это происходит потому, что ожидается пользователь, а не другой процесс. Для выполнения команды c принудительным созданием псевдотерминала добавить добавить -t
+
+	vagrant@vagrant:~$ ssh -t localhost 'tty'
+	The authenticity of host 'localhost (::1)' can't be established.
+	ECDSA key fingerprint is SHA256:wSHl+h4vAtTT7mbkj2lbGyxWXWTUf6VUliwpncjwLPM.
+	Are you sure you want to continue connecting (yes/no/[fingerprint])? нуы
+	Please type 'yes', 'no' or the fingerprint: yes
+	Warning: Permanently added 'localhost' (ECDSA) to the list of known hosts.
+	vagrant@localhost's password:
+	Permission denied, please try again.
+	vagrant@localhost's password:
+	/dev/pts/1
+	Connection to localhost closed.
+	vagrant@vagrant:~$
+
+### 13. Бывает, что есть необходимость переместить запущенный процесс из одной сессии в другую. Попробуйте сделать это, воспользовавшись reptyr. Например, так можно перенести в screen процесс, который вы запустили по ошибке в обычной SSH-сессии.
+
+	sudo apt-get install reptyr
+	vi /etc/sysctl.d/10-ptrace.conf #установить 
+	dkernel.yama.ptrace_scope = 0
+
+	root@vagrant:/home/vagrant# reptyr 13207
+	[-] Process 13200 (bash) shares 13207's process group. Unable to attach.
+	(This most commonly means that 13207 has suprocesses).
+	Unable to attach to pid 13207: Invalid argument
+	root@vagrant:/home/vagrant# ps
+		PID TTY          TIME CMD
+	13243 pts/1    00:00:00 bash
+	13253 pts/1    00:00:00 ps
+	root@vagrant:/home/vagrant# reptyr 13243
+	[-] Timed out waiting for child stop.
+	Hangup
+	root@vagrant:/home/vagrant# ps
+		PID TTY          TIME CMD
+		1 ?        00:00:04 systemd
+		2 ?        00:00:00 kthreadd
+		3 ?        00:00:00 rcu_gp
+		4 ?        00:00:00 rcu_par_gp
+		6 ?        00:00:00 kworker/0:0H-kblockd
 
 
+### 14. sudo echo string > /root/new_file не даст выполнить перенаправление под обычным пользователем, так как перенаправлением занимается процесс shell'а, который запущен без sudo под вашим пользователем. Для решения данной проблемы можно использовать конструкцию echo string | sudo tee /root/new_file. Узнайте что делает команда tee и почему в отличие от sudo echo команда с sudo tee будет работать.
 
-# 2. Какому тегу соответствует коммит 85024d3?
+tee выводит файл, указаный в качестве параметра, и в stdout.
+в данном примере команда получает вывод из stdin, перенаправленный от stdout команды echo, т.к команда запущена от sudo, то у нее есть права за напись в файла
 
-## git show 85024d3
-## tag: v0.12.23
+	vagrant@vagrant:~$ sudo echo string > /root/new_file
+	bash: /root/new_file: Permission denied
+	vagrant@vagrant:~$ echo string | sudo tee /root/new_file
+	string
+	vagrant@vagrant:~$
 
-# 3. Сколько родителей у коммита b8d720? Напишите их хеши.
-## у коммита b8d720 - 2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
-
->git show b8d720^
->commit 56cd7859e05c36c06b56d013b55a252d0bb7e158
->Merge: 58dcac4b7 ffbcf5581
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Mon Jan 13 13:19:09 2020 -0800
->
->    Merge pull request #23857 from hashicorp/cgriggs01-stable
->
->    [cherry-pick]add checkpoint links
->
->git show b8d720^2
->commit 9ea88f22fc6269854151c571162c5bcf958bee2b
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Tue Jan 21 17:08:06 2020 -0800
->
->    add/update community provider listings
->
->diff --git a/website/docs/providers/type/community-index.html.markdown b/website/docs/providers/type/community-index.html.markdown
->index 6119f048f..675059dd4 100644
->--- a/website/docs/providers/type/community-index.html.markdown
->+++ b/website/docs/providers/type/community-index.html.markdown
->@@ -28,19 +28,23 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Apigee](https://github.com/zambien/terraform-provider-apigee)
-> - [Artifactory](https://github.com/atlassian/terraform-provider-artifactory)
-> - [Auth](https://github.com/Shuttl-Tech/terraform-provider-auth)
->-- [Auth0](https://github.com/bocodigitalmedia/terraform-provider-auth0)
->+- [Auth0](https://github.com/alexkappa/terraform-provider-auth0)
-> - [Automic Continuous Delivery](https://github.com/Automic/terraform-provider-cda)
-> - [AVI](https://github.com/avinetworks/terraform-provider-avi)
-> - [Aviatrix](https://github.com/AviatrixSystems/terraform-provider-aviatrix)
-> - [AWX](https://github.com/mauromedda/terraform-provider-awx)
-> - [Azure Devops](https://github.com/agarciamiravet/terraform-provider-azuredevops)
-> - [Bitbucket Server](https://github.com/gavinbunney/terraform-provider-bitbucketserver)
->+- [CDS](https://github.com/capitalonline/terraform-provider-cds)
-> - [Centreon](https://github.com/smutel/terraform-provider-centreon)
-> - [Checkly](https://github.com/bitfield/terraform-provider-checkly)
-> - [Cherry Servers](https://github.com/cherryservers/terraform-provider-cherryservers)
-> - [Citrix ADC](https://github.com/citrix/terraform-provider-citrixadc)
-> - [Cloud Foundry](https://github.com/cloudfoundry-community/terraform-provider-cf)
->+- [Cloud.dk](https://github.com/danitso/terraform-provider-clouddk)
->+- [Cloudability](https://github.com/skyscrapr/terraform-provider-cloudability)
-> - [CloudAMQP](https://github.com/cloudamqp/terraform-provider)
->+- [Cloudforms](https://github.com/GSLabDev/terraform-provider-cloudforms)
-> - [CloudKarafka](https://github.com/cloudkarafka/terraform-provider)
-> - [CloudMQTT](https://github.com/cloudmqtt/terraform-provider)
-> - [CloudPassage Halo](https://gitlab.com/kiwicom/terraform-provider-cphalo)
->@@ -78,6 +82,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Google Calendar](https://github.com/sethvargo/terraform-provider-googlecalendar)
-> - [Google G Suite](https://github.com/DeviaVir/terraform-provider-gsuite)
-> - [GorillaStack](https://github.com/GorillaStack/terraform-provider-gorillastack)
->+- [Greylog](https://github.com/suzuki-shunsuke/go-graylog)
->+- [Harbor](https://github.com/BESTSELLER/terraform-harbor-provider)
-> - [Hiera](https://github.com/ribbybibby/terraform-provider-hiera)
-> - [HPE OneView](https://github.com/HewlettPackard/terraform-provider-oneview)
-> - [HTTP File Upload](https://github.com/GSLabDev/terraform-provider-httpfileupload)
->@@ -85,6 +91,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [IIJ GIO](https://github.com/iij/terraform-provider-p2pub)
-> - [Infoblox](https://github.com/hiscox/terraform-provider-infoblox)
-> - [InsightOPS](https://github.com/Tweddle-SE-Team/terraform-provider-insight)
->+- [Instana](https://github.com/gessnerfl/terraform-provider-instana)
->...
->
->bil@LAPTOP-GJ376PE7:/mnt/d/devops-netology/terraform/terraform$ git show b8d720^3
->fatal: ambiguous argument 'b8d720^3': unknown revision or path not in the working tree.
->Use '--' to separate paths from revisions, like this:
->'git <command> [<revision>...] -- [<file>...]'
-
-# 4. Перечислите хеши и комментарии всех коммитов которые были сделаны между тегами v0.12.23 и v0.12.24.
-## git log --oneline v0.12.23  v0.12.24
-
->git log --oneline v0.12.23  v0.12.24
->33ff1c03b (tag: v0.12.24) v0.12.24
->b14b74c49 [Website] vmc provider links
->3f235065b Update CHANGELOG.md
->6ae64e247 registry: Fix panic when server is unreachable
->5c619ca1b website: Remove links to the getting started guide's old location
->06275647e Update CHANGELOG.md
->d5f9411f5 command: Fix bug when using terraform login on Windows
->4b6d06cc5 Update CHANGELOG.md
->dd01a3507 Update CHANGELOG.md
->225466bc3 Cleanup after v0.12.23 release
->85024d310 (tag: v0.12.23) v0.12.23
->4703cb6c1 Update CHANGELOG.md
->0b4470e0d Cleanup after v0.12.22 release
->18bfd096b (tag: v0.12.22) v0.12.22
->c66cdcf78 backend/plan: Show warnings even without changes (backport) (#24172)
->566be7a3c Update CHANGELOG.md
->d7a9ebf55 Update CHANGELOG.md
->791ebcb8e state mv should always target instance each mode
->c32ff5ec5 Update CHANGELOG.md
->64f328c6a Update CHANGELOG.md
->2cdfa0851 registry: configurable client timeout (#24259)
->f2800851c Update CHANGELOG.md
->ca2facfd9 registry: fix env test cleanup
->c8b8bc3f6 registry: setup client logger
->8cbdddc21 website/docs/commands: document TF_REGISTRY_DISCOVERY_RETRY
->46ec259fa registry: configurable retry client
->eb07dccd0 Merge pull request #24176 from hashicorp/cgriggs01-stable-quorum
->0a32eab6c Merge pull request #24268 from hashicorp/cgriggs01-stable-oktaasa
->adfe8d1e0 Merge pull request #20260 from nlamirault/patch-1
->652774430 Update CHANGELOG.md
->173530d89 (tag: v0.12.21) v0.12.21
->266ba3a0a Update CHANGELOG.md
->8fd9d7696 [Website] Adding community providers
->7c082b034 website: add token setup callout to remote backend docs (#24109)
->1b6ca2884 add Baidu links + okta
->1025b285a website: Private registry is free now
->477203f01 Update CHANGELOG.md
->b6d767a5c terraform: Add test coverage for eval_for_each
->257099324 terraform: detect null values in for_each sets
->00b9f2291 command/login: Fix browser launcher for WSL users
->049f7bf95 Update CHANGELOG.md
->c5f181ccf command: Fix stale lock when exiting early
->8c19ed71c Update CHANGELOG.md
->9f5d3832f Update CHANGELOG.md
->15420a759 Update CHANGELOG.md
->5a503e292 backend/cos: Add TencentCloud backend cos with lock (#22540)
->fb7def460 Update CHANGELOG.md
->86155e1c1 command/workspace delete: release lock after workspace removal warning (#24085)
->e4809d6d8 Update CHANGELOG.md
-
-# 5. Найдите коммит в котором была создана функция func providerSource, ее определение в коде выглядит так func providerSource(...) (вместо троеточего перечислены аргументы).
-
-## 5e06e39fcc86bb622b962c87da84213d3331ddf8
-## git log -SproviderSource --oneline
-## git show 5e06e39fc
-
->git log -SproviderSource --oneline
->5b266dd5c command: Remove the experimental "terraform add" command
->c587384df cli: Restore -lock and -lock-timeout init flags
->583859e51 commands: `terraform add` (#28874)
->5f30efe85 command tests: plan and init (#28616)
->c89004d22 core: Add sensitive provider attrs to JSON plan
->31a5aa187 command/init: Add a new flag `-lockfile=readonly` (#27630)
->bab497912 command/init: Remove the warnings about the "legacy" cache directory
->e70ab09bf command: new cache directory .terraform/providers for providers
->b3f5c7f1e command/init: Read, respect, and update provider dependency locks
->0b734a280 command: Make provider installation interruptible
->9f824c53a command: Better in-house provider install errors
->d8e996436 terraform: Eval module call arguments for import
->87d1fb400 command/init: Display provider validation errors
->6b3d0ee64 add test for terraform version
->dbe139e61 add test for terraform version -json
->b611bd720 reproduction test
->8b279b6f3 plugin/discovery: Remove dead code
->ca4010706 command/init: Better diagnostics for provider 404s
->62d826e06 command/init: Use full config for provider reqs
->ae98bd12a command: Rework 0.13upgrade sub-command
->5af1e6234 main: Honor explicit provider_installation CLI config when present
->269d51148 command/providers: refactor with new provider types and functions
->8c928e835 main: Consult local directories as potential mirrors of providers
->958ea4f7d internal/providercache: Handle built-in providers
->de6c9ccec command/init: Move "vendored provider" test to e2etests
->0af09b23c command: apply and most of import tests passing
->add7006de command: Fix TestInit_pluginDirProviders and _pluginDirProvidersDoesNotGet
->d40085f37 command: Make the tests compile again
->3b0b29ef5 command: Add scaffold for 0.13upgrade command
->18dd1bb4d Mildwonkey/tfconfig upgrade (#23670)
->5e06e39fc Use registry alias to fetch providers
->
->git show 5e06e39fc
->commit 5e06e39fcc86bb622b962c87da84213d3331ddf8
->Author: findkim <kngo@hashicorp.com>
->Date:   Wed Nov 28 10:26:16 2018 -0600
->
->    Use registry alias to fetch providers
->
->diff --git a/plugin/discovery/get.go b/plugin/discovery/get.go
->index 2f6ac1a91..751844e17 100644
->--- a/plugin/discovery/get.go
->+++ b/plugin/discovery/get.go
->@@ -134,6 +134,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->        if len(allVersions.Versions) == 0 {
->                return PluginMeta{}, ErrorNoSuitableVersion
->        }
->+       providerSource := allVersions.ID
->
->        // Filter the list of plugin versions to those which meet the version constraints
->        versions := allowedVersions(allVersions, req)
->@@ -175,7 +176,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                return PluginMeta{}, ErrorNoVersionCompatibleWithPlatform
->        }
->
->-       downloadURLs, err := i.listProviderDownloadURLs(provider, versionMeta.Version)
->+       downloadURLs, err := i.listProviderDownloadURLs(providerSource, versionMeta.Version)
->        providerURL := downloadURLs.DownloadURL
->
->        i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", provider, versionMeta.Version))
->@@ -193,6 +194,9 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                }
->        }
->
->+       printedProviderName := fmt.Sprintf("%s (%s)", provider, providerSource)
->+       i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", printedProviderName, versionMeta.Version))
->+       log.Printf("[DEBUG] getting provider %q version %q", printedProviderName, versionMeta.Version)
->        err = i.install(provider, v, providerURL)
->        if err != nil {
->                return PluginMeta{}, err
->diff --git a/plugin/discovery/get_test.go b/plugin/discovery/get_test.go
->index 534a01fa5..73e8bdd18 100644
->--- a/plugin/discovery/get_test.go
->+++ b/plugin/discovery/get_test.go
->@@ -130,6 +130,7 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
->
-> func testReleaseServer() *httptest.Server {
->        handler := http.NewServeMux()
->+       handler.HandleFunc("/v1/providers/-/", testHandler)
->        handler.HandleFunc("/v1/providers/terraform-providers/", testHandler)
->        handler.HandleFunc("/terraform-provider-template/", testChecksumHandler)
->        handler.HandleFunc("/terraform-provider-badsig/", testChecksumHandler)
->:
->
-
-
-# 6. Найдите все коммиты в которых была изменена функция globalPluginDirs.
-
-## git log -SglobalPluginDirs --oneline
->35a058fb3 main: configure credentials from the CLI config file
->c0b176109 prevent log output during init
->8364383c3 Push plugin discovery down into command package
-
-
-# 7. Кто автор функции synchronizedWriters?
-
-## Author: Martin Atkins <mart@degeneration.co.uk>
-## git log -SsynchronizedWriters --oneline
->bdfea50cc remove unused
->fd4f7eb0b remove prefixed io
->5ac311e2a main: synchronize writes to VT100-faker on Windows
-
-##  git show 5ac311e2a
->commit 5ac311e2a91e381e2f52234668b49ba670aa0fe5
->Author: Martin Atkins <mart@degeneration.co.uk>
->Date:   Wed May 3 16:25:41 2017 -0700
->...
