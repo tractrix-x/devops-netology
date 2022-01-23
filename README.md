@@ -8,6 +8,16 @@
 ### 2. Попробуйте использовать команду file на объекты разных типов на файловой системе. Например:
 vagrant@netology1:~$ file /dev/tty
 /dev/tty: character special (5/0)
+vagrant@netology1:~$ file /dev/sda
+/dev/sda: block special (8/0)
+vagrant@netology1:~$ file /bin/bash
+/bin/bash: ELF 64-bit LSB shared object, x86-64
+Используя strace выясните, где находится база данных file на основании которой она делает свои догадки.
+
+Предполагаю, что база данных file находится в /usr/share/misc/magic.mgc, т.к. это бинарный файл.
+
+	vagrant@netology1:~$ file /dev/tty
+	/dev/tty: character special (5/0)
 	strace file /dev/tty
 	openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
 	openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libmagic.so.1", O_RDONLY|O_CLOEXEC) = 3
@@ -20,8 +30,9 @@ vagrant@netology1:~$ file /dev/tty
 	openat(AT_FDCWD, "/etc/magic", O_RDONLY) = 3
 	openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 3
 	openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3
-vagrant@netology1:~$ file /dev/sda
-/dev/sda: block special (8/0)
+	
+	vagrant@netology1:~$ file /dev/sda
+	/dev/sda: block special (8/0)
 	strace file /dev/sda
 	openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
 	openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libmagic.so.1", O_RDONLY|O_CLOEXEC) = 3
@@ -35,12 +46,6 @@ vagrant@netology1:~$ file /dev/sda
 	openat(AT_FDCWD, "/etc/magic", O_RDONLY) = 3
 	openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 3
 	openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3
-vagrant@netology1:~$ file /bin/bash
-/bin/bash: ELF 64-bit LSB shared object, x86-64
-Используя strace выясните, где находится база данных file на основании которой она делает свои догадки.
-
-Предполагаю, что база данных file находится в /usr/share/misc/magic.mgc, т.к. это бинарный файл.
-
 
 ### 3. Предположим, приложение пишет лог в текстовый файл. Этот файл оказался удален (deleted в lsof), однако возможности сигналом сказать приложению переоткрыть файлы или просто перезапустить приложение – нет. Так как приложение продолжает писать в удаленный файл, место на диске постепенно заканчивается. Основываясь на знаниях о перенаправлении потоков предложите способ обнуления открытого удаленного файла (чтобы освободить место на файловой системе).
 
