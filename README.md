@@ -1,273 +1,308 @@
-# devops-netology
-# Для выполнения заданий в этом разделе давайте склонируем репозиторий с исходным кодом терраформа https://github.com/hashicorp/terraform
-# В виде результата напишите текстом ответы на вопросы и каким образом эти ответы были получены.
+# Домашнее задание к занятию "3.4. Операционные системы, лекция 2"
 
-# 1. Найдите полный хеш и комментарий коммита, хеш которого начинается на aefea.
-## $ git show aefea
-## aefead2207ef7e2aa5dc81a34aedf0cad4c32545
+### 1. На лекции мы познакомились с node_exporter. В демонстрации его исполняемый файл запускался в background. Этого достаточно для демо, но не для настоящей production-системы, где процессы должны находиться под внешним управлением. Используя знания из лекции по systemd, создайте самостоятельно простой unit-файл для node_exporter:
 
->commit aefead2207ef7e2aa5dc81a34aedf0cad4c32545
->Author: Alisdair McDiarmid <alisdair@users.noreply.github.com>
->$ git show aefea
->Date:   Thu Jun 18 10:29:58 2020 -0400
->
->    Update CHANGELOG.md
->
->diff --git a/CHANGELOG.md b/CHANGELOG.md
->index 86d70e3e0..588d807b1 100644
->--- a/CHANGELOG.md
->+++ b/CHANGELOG.md
->@@ -27,6 +27,7 @@ BUG FIXES:
-> * backend/s3: Prefer AWS shared configuration over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Prefer ECS credentials over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Remove hardcoded AWS Provider messaging ([#25134](https://github.com/hashicorp/terraform/issues/25134))
->+* command: Fix bug with global `-v`/`-version`/`--version` flags introduced in 0.13.0beta2 [GH-25277]
-> * command/0.13upgrade: Fix `0.13upgrade` usage help text to include options ([#25127](https://github.com/hashicorp/terraform/issues/25127))
-> * command/0.13upgrade: Do not add source for builtin provider ([#25215](https://github.com/hashicorp/terraform/issues/25215))
-> * command/apply: Fix bug which caused Terraform to silently exit on Windows when using absolute plan path ([#25233](https://github.com/hashicorp/terraform/issues/25233))
+Ставим node-exporter по \https://prometheus.io/docs/guides/node-exporter/
+В vagrant apt-get угается "Bus errorackage lists... 0%" обновила apt-get 
+sudo apt-get update
+sudo apt-get install wget
 
+	vagrant@vagrant:~$ sudo apt-get update
+	Hit:1 http://archive.ubuntu.com/ubuntu focal InRelease
+	Get:2 http://security.ubuntu.com/ubuntu focal-security InRelease [114 kB]
+	Get:3 http://archive.ubuntu.com/ubuntu focal-updates InRelease [114 kB]
+	Get:4 http://archive.ubuntu.com/ubuntu focal-backports InRelease [108 kB]
+	Get:5 http://security.ubuntu.com/ubuntu focal-security/main amd64 Packages [1,178 kB]
+	Get:6 http://archive.ubuntu.com/ubuntu focal-updates/main amd64 Packages [1,510 kB]
+	Get:7 http://archive.ubuntu.com/ubuntu focal-updates/main i386 Packages [592 kB]
+	Get:8 http://security.ubuntu.com/ubuntu focal-security/main i386 Packages [363 kB]
+	Get:9 http://archive.ubuntu.com/ubuntu focal-updates/main Translation-en [296 kB]
+	Get:10 http://security.ubuntu.com/ubuntu focal-security/main Translation-en [210 kB]
+	Get:11 http://archive.ubuntu.com/ubuntu focal-updates/restricted i386 Packages [21.8 kB]
+	Get:12 http://archive.ubuntu.com/ubuntu focal-updates/restricted amd64 Packages [736 kB]
+	Get:13 http://security.ubuntu.com/ubuntu focal-security/restricted i386 Packages [20.5 kB]
+	Get:14 http://security.ubuntu.com/ubuntu focal-security/restricted amd64 Packages [686 kB]
+	Get:15 http://archive.ubuntu.com/ubuntu focal-updates/restricted Translation-en [105 kB]
+	Get:16 http://archive.ubuntu.com/ubuntu focal-updates/universe amd64 Packages [894 kB]
+	Get:17 http://security.ubuntu.com/ubuntu focal-security/restricted Translation-en [97.9 kB]
+	Get:18 http://security.ubuntu.com/ubuntu focal-security/universe amd64 Packages [677 kB]
+	Get:19 http://archive.ubuntu.com/ubuntu focal-updates/universe i386 Packages [664 kB]
+	Get:20 http://archive.ubuntu.com/ubuntu focal-updates/universe Translation-en [196 kB]
+	Get:21 http://security.ubuntu.com/ubuntu focal-security/universe i386 Packages [532 kB]
+	Get:22 http://archive.ubuntu.com/ubuntu focal-updates/multiverse amd64 Packages [24.8 kB]
+	Get:23 http://archive.ubuntu.com/ubuntu focal-updates/multiverse i386 Packages [8,432 B]
+	Get:24 http://archive.ubuntu.com/ubuntu focal-updates/multiverse Translation-en [6,928 B]
+	Get:25 http://archive.ubuntu.com/ubuntu focal-backports/main i386 Packages [34.5 kB]
+	Get:26 http://archive.ubuntu.com/ubuntu focal-backports/main amd64 Packages [42.0 kB]
+	Get:27 http://archive.ubuntu.com/ubuntu focal-backports/main Translation-en [10.0 kB]
+	Get:28 http://archive.ubuntu.com/ubuntu focal-backports/universe i386 Packages [11.5 kB]
+	Get:29 http://archive.ubuntu.com/ubuntu focal-backports/universe amd64 Packages [20.8 kB]
+	Get:30 http://archive.ubuntu.com/ubuntu focal-backports/universe Translation-en [14.3 kB]
+	Get:31 http://security.ubuntu.com/ubuntu focal-security/universe Translation-en [115 kB]
+	Get:32 http://security.ubuntu.com/ubuntu focal-security/multiverse amd64 Packages [21.8 kB]
+	Get:33 http://security.ubuntu.com/ubuntu focal-security/multiverse i386 Packages [7,176 B]
+	Get:34 http://security.ubuntu.com/ubuntu focal-security/multiverse Translation-en [4,948 B]
+	Fetched 9,438 kB in 14s (681 kB/s)
+	Reading package lists... Done
+	vagrant@vagrant:~$
 
+Потом возникли проблемы со скачиванием архива, поправила /etc/resolv.conf
 
-# 2. Какому тегу соответствует коммит 85024d3?
+	root@vagrant:/home/vagrant# cat /etc/resolv.conf
+	# This file is managed by man:systemd-resolved(8). Do not edit.
+	#
+	# This is a dynamic resolv.conf file for connecting local clients to the
+	# internal DNS stub resolver of systemd-resolved. This file lists all
+	# configured search domains.
+	#
+	# Run "resolvectl status" to see details about the uplink DNS servers
+	# currently in use.
+	#
+	# Third party programs must not access this file directly, but only through the
+	# symlink at /etc/resolv.conf. To manage man:resolv.conf(5) in a different way,
+	# replace this symlink by a static file or a different symlink.
+	#
+	# See man:systemd-resolved.service(8) for details about the supported modes of
+	# operation for /etc/resolv.conf.
+	nameserver 172.17.128.1
+	#nameserver 127.0.0.53
+	#options edns0 trust-ad
+	#search Home
+	root@vagrant:/home/vagrant#
 
-## git show 85024d3
-## tag: v0.12.23
+Скачала и растарила
 
-# 3. Сколько родителей у коммита b8d720? Напишите их хеши.
-## у коммита b8d720 - 2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
+	vagrant@vagrant:~$ wget https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
+	--2022-01-26 18:07:34--  https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
+	Resolving github.com (github.com)... 140.82.121.3
+	Connecting to github.com (github.com)|140.82.121.3|:443... connected.
+	HTTP request sent, awaiting response... 302 Found
+	Location: \https://objects.githubusercontent.com/github-production-release-asset-2e65be/9524057/7c60f6f9-7b41-446c-be81-a6c24a9d0383?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220126%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220126T182416Z&X-Amz-Expires=300&X-Amz-Signature=2a730ed6882bb5df29948936812963fb6951e1dd191f26a1f51dd2883591e6e0&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=9524057&response-content-disposition=attachment%3B%20filename%3Dnode_exporter-1.3.1.linux-amd64.tar.gz&response-content-type=application%2Foctet-stream [following]
+	--2022-01-26 18:07:34--  \https://objects.githubusercontent.com/github-production-release-asset-2e65be/9524057/7c60f6f9-7b41-446c-be81-a6c24a9d0383?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220126%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220126T182416Z&X-Amz-Expires=300&X-Amz-Signature=2a730ed6882bb5df29948936812963fb6951e1dd191f26a1f51dd2883591e6e0&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=9524057&response-content-disposition=attachment%3B%20filename%3Dnode_exporter-1.3.1.linux-amd64.tar.gz&response-content-type=application%2Foctet-stream
+	Resolving objects.githubusercontent.com (objects.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...
+	Connecting to objects.githubusercontent.com (objects.githubusercontent.com)|185.199.108.133|:443... connected.
+	HTTP request sent, awaiting response... 200 OK
+	Length: 9033415 (8.6M) [application/octet-stream]
+	Saving to: ‘node_exporter-1.3.1.linux-amd64.tar.gz’
+	
+	node_exporter-1.3.1.linux-amd64.tar.gz 100%[============================================================================>]   8.61M  2.60MB/s    in 3.3s
+	
+	2022-01-26 18:07:38 (2.60 MB/s) - ‘node_exporter-1.3.1.linux-amd64.tar.gz’ saved [9033415/9033415]
+	
+	vagrant@vagrant:~$
+	
+	vagrant@vagrant:~$ tar xvfz node_exporter-1.3.1.linux-amd64.tar.gz
+	node_exporter-1.3.1.linux-amd64/
+	node_exporter-1.3.1.linux-amd64/LICENSE
+	node_exporter-1.3.1.linux-amd64/NOTICE
+	node_exporter-1.3.1.linux-amd64/node_exporter
+	
+	vagrant@vagrant:~$ cd node_exporter-1.3.1.linux-amd64/
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$
 
->git show b8d720^
->commit 56cd7859e05c36c06b56d013b55a252d0bb7e158
->Merge: 58dcac4b7 ffbcf5581
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Mon Jan 13 13:19:09 2020 -0800
->
->    Merge pull request #23857 from hashicorp/cgriggs01-stable
->
->    [cherry-pick]add checkpoint links
->
->git show b8d720^2
->commit 9ea88f22fc6269854151c571162c5bcf958bee2b
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Tue Jan 21 17:08:06 2020 -0800
->
->    add/update community provider listings
->
->diff --git a/website/docs/providers/type/community-index.html.markdown b/website/docs/providers/type/community-index.html.markdown
->index 6119f048f..675059dd4 100644
->--- a/website/docs/providers/type/community-index.html.markdown
->+++ b/website/docs/providers/type/community-index.html.markdown
->@@ -28,19 +28,23 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Apigee](https://github.com/zambien/terraform-provider-apigee)
-> - [Artifactory](https://github.com/atlassian/terraform-provider-artifactory)
-> - [Auth](https://github.com/Shuttl-Tech/terraform-provider-auth)
->-- [Auth0](https://github.com/bocodigitalmedia/terraform-provider-auth0)
->+- [Auth0](https://github.com/alexkappa/terraform-provider-auth0)
-> - [Automic Continuous Delivery](https://github.com/Automic/terraform-provider-cda)
-> - [AVI](https://github.com/avinetworks/terraform-provider-avi)
-> - [Aviatrix](https://github.com/AviatrixSystems/terraform-provider-aviatrix)
-> - [AWX](https://github.com/mauromedda/terraform-provider-awx)
-> - [Azure Devops](https://github.com/agarciamiravet/terraform-provider-azuredevops)
-> - [Bitbucket Server](https://github.com/gavinbunney/terraform-provider-bitbucketserver)
->+- [CDS](https://github.com/capitalonline/terraform-provider-cds)
-> - [Centreon](https://github.com/smutel/terraform-provider-centreon)
-> - [Checkly](https://github.com/bitfield/terraform-provider-checkly)
-> - [Cherry Servers](https://github.com/cherryservers/terraform-provider-cherryservers)
-> - [Citrix ADC](https://github.com/citrix/terraform-provider-citrixadc)
-> - [Cloud Foundry](https://github.com/cloudfoundry-community/terraform-provider-cf)
->+- [Cloud.dk](https://github.com/danitso/terraform-provider-clouddk)
->+- [Cloudability](https://github.com/skyscrapr/terraform-provider-cloudability)
-> - [CloudAMQP](https://github.com/cloudamqp/terraform-provider)
->+- [Cloudforms](https://github.com/GSLabDev/terraform-provider-cloudforms)
-> - [CloudKarafka](https://github.com/cloudkarafka/terraform-provider)
-> - [CloudMQTT](https://github.com/cloudmqtt/terraform-provider)
-> - [CloudPassage Halo](https://gitlab.com/kiwicom/terraform-provider-cphalo)
->@@ -78,6 +82,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Google Calendar](https://github.com/sethvargo/terraform-provider-googlecalendar)
-> - [Google G Suite](https://github.com/DeviaVir/terraform-provider-gsuite)
-> - [GorillaStack](https://github.com/GorillaStack/terraform-provider-gorillastack)
->+- [Greylog](https://github.com/suzuki-shunsuke/go-graylog)
->+- [Harbor](https://github.com/BESTSELLER/terraform-harbor-provider)
-> - [Hiera](https://github.com/ribbybibby/terraform-provider-hiera)
-> - [HPE OneView](https://github.com/HewlettPackard/terraform-provider-oneview)
-> - [HTTP File Upload](https://github.com/GSLabDev/terraform-provider-httpfileupload)
->@@ -85,6 +91,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [IIJ GIO](https://github.com/iij/terraform-provider-p2pub)
-> - [Infoblox](https://github.com/hiscox/terraform-provider-infoblox)
-> - [InsightOPS](https://github.com/Tweddle-SE-Team/terraform-provider-insight)
->+- [Instana](https://github.com/gessnerfl/terraform-provider-instana)
->...
->
->bil@LAPTOP-GJ376PE7:/mnt/d/devops-netology/terraform/terraform$ git show b8d720^3
->fatal: ambiguous argument 'b8d720^3': unknown revision or path not in the working tree.
->Use '--' to separate paths from revisions, like this:
->'git <command> [<revision>...] -- [<file>...]'
+Создание  unit-файла
 
-# 4. Перечислите хеши и комментарии всех коммитов которые были сделаны между тегами v0.12.23 и v0.12.24.
-## git log --oneline v0.12.23  v0.12.24
+	root@vagrant:/home/vagrant# chmod 755 /etc/systemd/system/node_exporter.service
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ cat /etc/systemd/system/node_exporter.service
+	#!/bin/sh -
+	# /etc/systemd/system/node_exporter.service/node_exporter.service
+	[Unit]
+	Description=node_exporter
+	
+	[Service]
+	#ExecStart=/opt/node_exporter/node_exporter
+	ExecStart=/home/vagrant/node_exporter-1.3.1.linux-amd64/node_exporter --collector.nfs --collector.nfsd --web.listen-address 0.0.0.0:9100
+	WorkingDirectory=/home/vagrant/node_exporter-1.3.1.linux-amd64
+	EnvironmentFile=/etc/default/node_exporter
+	User=vagrant
+	Group=vagrant
+	
+	[Install]
+	Wantedby=multi-user.target
+	
+	root@vagrant:/home/vagrant# systemctl daemon-reload
+	
+	root@vagrant:/home/vagrant# systemctl enable node_exporter
+	The unit files have no installation config (WantedBy=, RequiredBy=, Also=,
+	Alias= settings in the [Install] section, and DefaultInstance= for template
+	units). This means they are not meant to be enabled using systemctl.
+	Possible reasons for having this kind of units are:
+	• A unit may be statically enabled by being symlinked from another unit's
+	.wants/ or .requires/ directory.
+	• A unit's purpose may be to act as a helper for some other unit which has
+	a requirement dependency on it.
+	• A unit may be started when needed via activation (socket, path, timer,
+	D-Bus, udev, scripted systemctl call, ...).
+	• In case of template units, the unit is meant to be enabled with some
+	instance name specified.
+	
+	root@vagrant:/home/vagrant# systemctl daemon-reload
 
->git log --oneline v0.12.23  v0.12.24
->33ff1c03b (tag: v0.12.24) v0.12.24
->b14b74c49 [Website] vmc provider links
->3f235065b Update CHANGELOG.md
->6ae64e247 registry: Fix panic when server is unreachable
->5c619ca1b website: Remove links to the getting started guide's old location
->06275647e Update CHANGELOG.md
->d5f9411f5 command: Fix bug when using terraform login on Windows
->4b6d06cc5 Update CHANGELOG.md
->dd01a3507 Update CHANGELOG.md
->225466bc3 Cleanup after v0.12.23 release
->85024d310 (tag: v0.12.23) v0.12.23
->4703cb6c1 Update CHANGELOG.md
->0b4470e0d Cleanup after v0.12.22 release
->18bfd096b (tag: v0.12.22) v0.12.22
->c66cdcf78 backend/plan: Show warnings even without changes (backport) (#24172)
->566be7a3c Update CHANGELOG.md
->d7a9ebf55 Update CHANGELOG.md
->791ebcb8e state mv should always target instance each mode
->c32ff5ec5 Update CHANGELOG.md
->64f328c6a Update CHANGELOG.md
->2cdfa0851 registry: configurable client timeout (#24259)
->f2800851c Update CHANGELOG.md
->ca2facfd9 registry: fix env test cleanup
->c8b8bc3f6 registry: setup client logger
->8cbdddc21 website/docs/commands: document TF_REGISTRY_DISCOVERY_RETRY
->46ec259fa registry: configurable retry client
->eb07dccd0 Merge pull request #24176 from hashicorp/cgriggs01-stable-quorum
->0a32eab6c Merge pull request #24268 from hashicorp/cgriggs01-stable-oktaasa
->adfe8d1e0 Merge pull request #20260 from nlamirault/patch-1
->652774430 Update CHANGELOG.md
->173530d89 (tag: v0.12.21) v0.12.21
->266ba3a0a Update CHANGELOG.md
->8fd9d7696 [Website] Adding community providers
->7c082b034 website: add token setup callout to remote backend docs (#24109)
->1b6ca2884 add Baidu links + okta
->1025b285a website: Private registry is free now
->477203f01 Update CHANGELOG.md
->b6d767a5c terraform: Add test coverage for eval_for_each
->257099324 terraform: detect null values in for_each sets
->00b9f2291 command/login: Fix browser launcher for WSL users
->049f7bf95 Update CHANGELOG.md
->c5f181ccf command: Fix stale lock when exiting early
->8c19ed71c Update CHANGELOG.md
->9f5d3832f Update CHANGELOG.md
->15420a759 Update CHANGELOG.md
->5a503e292 backend/cos: Add TencentCloud backend cos with lock (#22540)
->fb7def460 Update CHANGELOG.md
->86155e1c1 command/workspace delete: release lock after workspace removal warning (#24085)
->e4809d6d8 Update CHANGELOG.md
+	root@vagrant:/home/vagrant# systemctl -l status node_exporter
+	node_exporter.service - node_exporter
+	Loaded: loaded (/etc/systemd/system/node_exporter.service; enabled; vendor preset: enabled)
+	Active: inactive (dead)
+	
+Проверка использования переменных окружения процессом node_exporter
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ sudo cat /proc/1652/environ
+	LANG=en_US.UTF-8LANGUAGE=en_US:PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/binLANGUAGE=en_US:PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/binHOME=/home/vagrantLOGNAME=vagrantUSER=vagrantSHELL=/bin/bashINVOCATION_ID=0fcb24d52895405c875cbb9cbc28d3ffJOURNAL_STREAM=9:35758MYVAR=some_valueJOURNAL_STREAM=9:30179vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$
+	
+Проверка того, что через systemctl процесс корректно стартует, завершается, а после перезагрузки автоматически поднимается.
 
-# 5. Найдите коммит в котором была создана функция func providerSource, ее определение в коде выглядит так func providerSource(...) (вместо троеточего перечислены аргументы).
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ systemctl stop node_exporter
+	==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-units ===
+	Authentication is required to stop 'node_exporter.service'.
+	Authenticating as: vagrant,,, (vagrant)
+	Password:
+	==== AUTHENTICATION COMPLETE ===
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ ps -ef | grep node_exporter
+	vagrant     1642    1078  0 03:55 pts/1    00:00:00 grep --color=auto node_exporter
+	
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ systemctl start node_exporter
+	==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-units ===
+	Authentication is required to start 'node_exporter.service'.
+	Authenticating as: vagrant,,, (vagrant)
+	Password:
+	==== AUTHENTICATION COMPLETE ===
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ ps -ef | grep node_exporter
+	vagrant     1652       1  0 03:55 ?        00:00:00 /home/vagrant/node_exporter-1.3.1.linux-amd64/node_exporter --collector.nfs --collector.nfsd --web.listen-address 0.0.0.0:9100
+	vagrant     1667    1078  0 03:55 pts/1    00:00:00 grep --color=auto node_exporter
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$
+	
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ systemctl restart node_exporter
+	==== AUTHENTICATING FOR org.freedesktop.systemd1.manage-units ===
+	Authentication is required to restart 'node_exporter.service'.
+	Authenticating as: vagrant,,, (vagrant)
+	Password:
+	==== AUTHENTICATION COMPLETE ===
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ ps -ef | grep node_exporter
+	vagrant     1703       1  0 09:27 ?        00:00:00 /home/vagrant/node_exporter-1.3.1.linux-amd64/node_exporter --collector.nfs --collector.nfsd --web.listen-address 0.0.0.0:9100
+	vagrant     1721    1078  0 09:27 pts/1    00:00:00 grep --color=auto node_exporter
+	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$
 
-## 5e06e39fcc86bb622b962c87da84213d3331ddf8
-## git log -SproviderSource --oneline
-## git show 5e06e39fc
+### 2. Ознакомьтесь с опциями node_exporter и выводом /metrics по-умолчанию. Приведите несколько опций, которые вы бы выбрали для базового мониторинга хоста по CPU, памяти, диску и сети.
 
->git log -SproviderSource --oneline
->5b266dd5c command: Remove the experimental "terraform add" command
->c587384df cli: Restore -lock and -lock-timeout init flags
->583859e51 commands: `terraform add` (#28874)
->5f30efe85 command tests: plan and init (#28616)
->c89004d22 core: Add sensitive provider attrs to JSON plan
->31a5aa187 command/init: Add a new flag `-lockfile=readonly` (#27630)
->bab497912 command/init: Remove the warnings about the "legacy" cache directory
->e70ab09bf command: new cache directory .terraform/providers for providers
->b3f5c7f1e command/init: Read, respect, and update provider dependency locks
->0b734a280 command: Make provider installation interruptible
->9f824c53a command: Better in-house provider install errors
->d8e996436 terraform: Eval module call arguments for import
->87d1fb400 command/init: Display provider validation errors
->6b3d0ee64 add test for terraform version
->dbe139e61 add test for terraform version -json
->b611bd720 reproduction test
->8b279b6f3 plugin/discovery: Remove dead code
->ca4010706 command/init: Better diagnostics for provider 404s
->62d826e06 command/init: Use full config for provider reqs
->ae98bd12a command: Rework 0.13upgrade sub-command
->5af1e6234 main: Honor explicit provider_installation CLI config when present
->269d51148 command/providers: refactor with new provider types and functions
->8c928e835 main: Consult local directories as potential mirrors of providers
->958ea4f7d internal/providercache: Handle built-in providers
->de6c9ccec command/init: Move "vendored provider" test to e2etests
->0af09b23c command: apply and most of import tests passing
->add7006de command: Fix TestInit_pluginDirProviders and _pluginDirProvidersDoesNotGet
->d40085f37 command: Make the tests compile again
->3b0b29ef5 command: Add scaffold for 0.13upgrade command
->18dd1bb4d Mildwonkey/tfconfig upgrade (#23670)
->5e06e39fc Use registry alias to fetch providers
->
->git show 5e06e39fc
->commit 5e06e39fcc86bb622b962c87da84213d3331ddf8
->Author: findkim <kngo@hashicorp.com>
->Date:   Wed Nov 28 10:26:16 2018 -0600
->
->    Use registry alias to fetch providers
->
->diff --git a/plugin/discovery/get.go b/plugin/discovery/get.go
->index 2f6ac1a91..751844e17 100644
->--- a/plugin/discovery/get.go
->+++ b/plugin/discovery/get.go
->@@ -134,6 +134,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->        if len(allVersions.Versions) == 0 {
->                return PluginMeta{}, ErrorNoSuitableVersion
->        }
->+       providerSource := allVersions.ID
->
->        // Filter the list of plugin versions to those which meet the version constraints
->        versions := allowedVersions(allVersions, req)
->@@ -175,7 +176,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                return PluginMeta{}, ErrorNoVersionCompatibleWithPlatform
->        }
->
->-       downloadURLs, err := i.listProviderDownloadURLs(provider, versionMeta.Version)
->+       downloadURLs, err := i.listProviderDownloadURLs(providerSource, versionMeta.Version)
->        providerURL := downloadURLs.DownloadURL
->
->        i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", provider, versionMeta.Version))
->@@ -193,6 +194,9 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                }
->        }
->
->+       printedProviderName := fmt.Sprintf("%s (%s)", provider, providerSource)
->+       i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", printedProviderName, versionMeta.Version))
->+       log.Printf("[DEBUG] getting provider %q version %q", printedProviderName, versionMeta.Version)
->        err = i.install(provider, v, providerURL)
->        if err != nil {
->                return PluginMeta{}, err
->diff --git a/plugin/discovery/get_test.go b/plugin/discovery/get_test.go
->index 534a01fa5..73e8bdd18 100644
->--- a/plugin/discovery/get_test.go
->+++ b/plugin/discovery/get_test.go
->@@ -130,6 +130,7 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
->
-> func testReleaseServer() *httptest.Server {
->        handler := http.NewServeMux()
->+       handler.HandleFunc("/v1/providers/-/", testHandler)
->        handler.HandleFunc("/v1/providers/terraform-providers/", testHandler)
->        handler.HandleFunc("/terraform-provider-template/", testChecksumHandler)
->        handler.HandleFunc("/terraform-provider-badsig/", testChecksumHandler)
->:
->
+	CPU:
+	process_cpu_seconds_total
+    node_cpu_seconds_total{cpu="0",mode="idle"} 
+    node_cpu_seconds_total{cpu="0",mode="system"}
+    node_cpu_seconds_total{cpu="0",mode="user"}
+    Memory:
+    node_memory_MemAvailable_bytes 
+    node_memory_MemFree_bytes
+	Disk:
+    node_disk_io_time_seconds_total{device="sda"} 
+    node_disk_read_bytes_total{device="sda"} 
+    node_disk_read_time_seconds_total{device="sda"} 
+    node_disk_write_time_seconds_total{device="sda"}
+	Network:
+	node_network_receive_bytes_total{device="eth0"} 
+    node_network_transmit_bytes_total{device="eth0"}
+    node_network_receive_errs_total{device="eth0"} 
+    node_network_transmit_errs_total{device="eth0"}
 
 
-# 6. Найдите все коммиты в которых была изменена функция globalPluginDirs.
+### 3. Установите в свою виртуальную машину Netdata. Воспользуйтесь готовыми пакетами для установки (sudo apt install -y netdata). После успешной установки: в конфигурационном файле /etc/netdata/netdata.conf в секции [web] замените значение с localhost на bind to = 0.0.0.0, добавьте в Vagrantfile проброс порта Netdata на свой локальный компьютер и сделайте vagrant reload: config.vm.network "forwarded_port", guest: 19999, host: 19999 После успешной перезагрузки в браузере на своем ПК (не в виртуальной машине) вы должны суметь зайти на localhost:19999. Ознакомьтесь с метриками, которые по умолчанию собираются Netdata и с комментариями, которые даны к этим метрикам.
 
-## git log -SglobalPluginDirs --oneline
->35a058fb3 main: configure credentials from the CLI config file
->c0b176109 prevent log output during init
->8364383c3 Push plugin discovery down into command package
+	https://packagecloud.io/netdata/netdata/install#bash-deb
+	vagrant@vagrant:~$ vi script.deb.sh
+	vagrant@vagrant:~$ curl -s https://packagecloud.io/install/repositories/netdata/netdata/script.deb.sh | sudo bash
+	Detected operating system as Ubuntu/focal.
+	Checking for curl...
+	Detected curl...
+	Checking for gpg...
+	Detected gpg...
+	Running apt-get update... done.
+	Installing apt-transport-https... done.
+	Installing /etc/apt/sources.list.d/netdata_netdata.list...done.
+	Importing packagecloud gpg key... done.
+	Running apt-get update... done.
+	The repository is setup! You can now install packages.
+	
+	vagrant@vagrant:~$ sudo apt install -y netdata
+	
+	vagrant@vagrant:~$ which netdata
+	/usr/sbin/netdata
+	vagrant@vagrant:~$
+	vagrant@vagrant:~$ cat /etc/netdata/netdata.conf | grep bind
+		bind to = 0.0.0.0
+	vagrant@vagrant:~$
+	
+	vagrant@vagrant:~$ sudo lsof -i :19999
+	COMMAND  PID    USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+	netdata 2490 netdata    5u  IPv6  32686      0t0  TCP localhost:19999 (LISTEN)
+	netdata 2490 netdata    6u  IPv4  32687      0t0  TCP localhost:19999 (LISTEN)
+	vagrant@vagrant:~$
 
+Отказано в подключении в браузере
 
-# 7. Кто автор функции synchronizedWriters?
+### 4. Можно ли по выводу dmesg понять, осознает ли ОС, что загружена не на настоящем оборудовании, а на системе виртуализации?
+Думаю да, в выводе это есть.
 
-## Author: Martin Atkins <mart@degeneration.co.uk>
-## git log -SsynchronizedWriters --oneline
->bdfea50cc remove unused
->fd4f7eb0b remove prefixed io
->5ac311e2a main: synchronize writes to VT100-faker on Windows
+	vagrant@vagrant:~$ dmesg |grep virtualiz
+	[    0.007974] CPU MTRRs all blank - virtualized system.
+	[    0.054936] Booting paravirtualized kernel on KVM
+	[    0.289046] Performance Events: PMU not available due to virtualization, using software events only.
+	[    5.920397] systemd[1]: Detected virtualization oracle.
+	vagrant@vagrant:~$
 
-##  git show 5ac311e2a
->commit 5ac311e2a91e381e2f52234668b49ba670aa0fe5
->Author: Martin Atkins <mart@degeneration.co.uk>
->Date:   Wed May 3 16:25:41 2017 -0700
->...
+	bil@LAPTOP-GJ376PE7:~$ dmesg |grep virtualiz
+	[    0.053468] Booting paravirtualized kernel on Hyper-V
+	[    0.172148] Performance Events: PMU not available due to virtualization, using software events only.
+	bil@LAPTOP-GJ376PE7:~$
+
+### 5. Как настроен sysctl fs.nr_open на системе по-умолчанию? Узнайте, что означает этот параметр. Какой другой существующий лимит не позволит достичь такого числа (ulimit --help)?
+fs.nr_open -это системное максимальное число открытых дескрипторов файла, для пользователя задать больше этого числа нельзя, если не менять значение.
+Число задается кратное 1024. 
+	vagrant@vagrant:~$ /sbin/sysctl -n fs.nr_open
+	1048576
+	vagrant@vagrant:~$
+Или посмотреть в /proc/sys/fs/nr_open
+
+ulimit -a -ограничение, которое может изменяться процессами динамически
+	vagrant@vagrant:~$ ulimit -a
+	open files                      (-n) 1024
+ulimit -aH заданное значение, и может быть изменен только root
+	vagrant@vagrant:~$ ulimit -aH
+	open files                      (-n) 1048576
+
+Максимальное возможное число открытых файлов в системе
+	vagrant@vagrant:~$ cat /proc/sys/fs/file-max
+	9223372036854775807
+	vagrant@vagrant:~$
+	
+### 6. Запустите любой долгоживущий процесс (не ls, который отработает мгновенно, а, например, sleep 1h) в отдельном неймспейсе процессов; покажите, что ваш процесс работает под PID 1 через nsenter. Для простоты работайте в данном задании под root (sudo -i). Под обычным пользователем требуются дополнительные опции (--map-root-user) и т.д.
+
+	vagrant@vagrant:~$ sudo -i
+	root@vagrant:~# unshare -f --pid --mount-proc sleep 1h
+	bg
+	^Z
+	
+	root@vagrant:/home/vagrant# ps aux
+	root        1861  0.0  0.0   8080   528 pts/1    S+   10:13   0:00 unshare -f --pid --mount-proc sleep 1h
+	root        1862  0.0  0.0   8076   592 pts/1    S+   10:13   0:00 sleep 1h
+
+Процесс
+
+	vagrant@vagrant:~$ sudo -i
+	root@vagrant:~# nsenter -t 1861 -p -m
+	root@vagrant:/# ps
+	Error, do this: mount -t proc proc /proc
+	root@vagrant:/# mount proc /proc -t proc
+	root@vagrant:/# ps
+		PID TTY          TIME CMD
+	1867 pts/0    00:00:00 sudo
+	1868 pts/0    00:00:00 bash
+	1877 pts/0    00:00:00 nsenter
+	1878 pts/0    00:00:00 bash
+	1893 pts/0    00:00:00 ps
+	root@vagrant:/#
+	
+### 7. Найдите информацию о том, что такое :(){ :|:& };:. Запустите эту команду в своей виртуальной машине Vagrant с Ubuntu 20.04 (это важно, поведение в других ОС не проверялось). Некоторое время все будет "плохо", после чего (минуты) – ОС должна стабилизироваться. Вызов dmesg расскажет, какой механизм помог автоматической стабилизации. Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
+
+	\https://wiki.merionet.ru/servernye-resheniya/33/10-komand-linux-kotorye-ubyut-vash-server/
+	> :(){ :|:& };: - Логическая бомба (известная также как fork bomb), забивающая память системы, что в итоге приводит к её зависанию.
+	
+	vagrant@vagrant:~$ :(){ :|:& };:
+	[1] 1896
+	vagrant@vagrant:~$ -bash: fork: retry: Resource temporarily unavailable
