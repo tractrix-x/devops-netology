@@ -234,7 +234,7 @@ sudo apt-get install wget
 	netdata 2490 netdata    6u  IPv4  32687      0t0  TCP localhost:19999 (LISTEN)
 	vagrant@vagrant:~$
 
-Отказано в подключении в браузере
+Пожклчиться не смогла.
 
 ### 4. Можно ли по выводу dmesg понять, осознает ли ОС, что загружена не на настоящем оборудовании, а на системе виртуализации?
 Думаю да, в выводе это есть.
@@ -254,22 +254,27 @@ sudo apt-get install wget
 ### 5. Как настроен sysctl fs.nr_open на системе по-умолчанию? Узнайте, что означает этот параметр. Какой другой существующий лимит не позволит достичь такого числа (ulimit --help)?
 fs.nr_open -это системное максимальное число открытых дескрипторов файла, для пользователя задать больше этого числа нельзя, если не менять значение.
 Число задается кратное 1024. 
-	vagrant@vagrant:~$ /sbin/sysctl -n fs.nr_open
+	
+	vagrant@vagrant:\~$ /sbin/sysctl -n fs.nr_open
 	1048576
-	vagrant@vagrant:~$
+	vagrant@vagrant:\~$
+	
 Или посмотреть в /proc/sys/fs/nr_open
 
 ulimit -a -ограничение, которое может изменяться процессами динамически
-	vagrant@vagrant:~$ ulimit -a
-	open files                      (-n) 1024
-ulimit -aH заданное значение, и может быть изменен только root
-	vagrant@vagrant:~$ ulimit -aH
-	open files                      (-n) 1048576
 
+	vagrant@vagrant:\~$ ulimit -a
+	open files                      (-n) 1024
+	
+ulimit -aH заданное значение, и может быть изменен только root
+	
+	vagrant@vagrant:\~$ ulimit -aH
+	open files                      (-n) 1048576
+	
 Максимальное возможное число открытых файлов в системе
-	vagrant@vagrant:~$ cat /proc/sys/fs/file-max
+	vagrant@vagrant:\~$ cat /proc/sys/fs/file-max
 	9223372036854775807
-	vagrant@vagrant:~$
+	vagrant@vagrant:\~$
 	
 ### 6. Запустите любой долгоживущий процесс (не ls, который отработает мгновенно, а, например, sleep 1h) в отдельном неймспейсе процессов; покажите, что ваш процесс работает под PID 1 через nsenter. Для простоты работайте в данном задании под root (sudo -i). Под обычным пользователем требуются дополнительные опции (--map-root-user) и т.д.
 
