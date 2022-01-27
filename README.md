@@ -77,8 +77,8 @@ sudo apt-get install wget
 	Resolving github.com (github.com)... 140.82.121.3
 	Connecting to github.com (github.com)|140.82.121.3|:443... connected.
 	HTTP request sent, awaiting response... 302 Found
-	Location: \https://objects.githubusercontent.com/github-production-release-asset-2e65be/9524057/7c60f6f9-7b41-446c-be81-a6c24a9d0383?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220126%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220126T182416Z&X-Amz-Expires=300&X-Amz-Signature=2a730ed6882bb5df29948936812963fb6951e1dd191f26a1f51dd2883591e6e0&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=9524057&response-content-disposition=attachment%3B%20filename%3Dnode_exporter-1.3.1.linux-amd64.tar.gz&response-content-type=application%2Foctet-stream [following]
-	--2022-01-26 18:07:34--  \https://objects.githubusercontent.com/github-production-release-asset-2e65be/9524057/7c60f6f9-7b41-446c-be81-a6c24a9d0383?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220126%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220126T182416Z&X-Amz-Expires=300&X-Amz-Signature=2a730ed6882bb5df29948936812963fb6951e1dd191f26a1f51dd2883591e6e0&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=9524057&response-content-disposition=attachment%3B%20filename%3Dnode_exporter-1.3.1.linux-amd64.tar.gz&response-content-type=application%2Foctet-stream
+	Location: https://objects.githubusercontent.com/github-production-release-asset-2e65be/9524057/7c60f6f9-7b41-446c-be81-a6c24a9d0383?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220126%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220126T182416Z&X-Amz-Expires=300&X-Amz-Signature=2a730ed6882bb5df29948936812963fb6951e1dd191f26a1f51dd2883591e6e0&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=9524057&response-content-disposition=attachment%3B%20filename%3Dnode_exporter-1.3.1.linux-amd64.tar.gz&response-content-type=application%2Foctet-stream [following]
+	--2022-01-26 18:07:34--  https://objects.githubusercontent.com/github-production-release-asset-2e65be/9524057/7c60f6f9-7b41-446c-be81-a6c24a9d0383?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220126%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220126T182416Z&X-Amz-Expires=300&X-Amz-Signature=2a730ed6882bb5df29948936812963fb6951e1dd191f26a1f51dd2883591e6e0&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=9524057&response-content-disposition=attachment%3B%20filename%3Dnode_exporter-1.3.1.linux-amd64.tar.gz&response-content-type=application%2Foctet-stream
 	Resolving objects.githubusercontent.com (objects.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...
 	Connecting to objects.githubusercontent.com (objects.githubusercontent.com)|185.199.108.133|:443... connected.
 	HTTP request sent, awaiting response... 200 OK
@@ -144,8 +144,8 @@ sudo apt-get install wget
 	Active: inactive (dead)
 	
 Проверка использования переменных окружения процессом node_exporter
-	vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$ sudo cat /proc/1652/environ
-	LANG=en_US.UTF-8LANGUAGE=en_US:PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/binLANGUAGE=en_US:PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/binHOME=/home/vagrantLOGNAME=vagrantUSER=vagrantSHELL=/bin/bashINVOCATION_ID=0fcb24d52895405c875cbb9cbc28d3ffJOURNAL_STREAM=9:35758MYVAR=some_valueJOURNAL_STREAM=9:30179vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$
+
+	vagrant@vagrant:\~/node_exporter-1.3.1.linux-amd64 sudo cat /proc/1652/environ	LANG=en_US.UTF-8LANGUAGE=en_US:PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/binLANGUAGE=en_US:PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/binHOME=/home/vagrantLOGNAME=vagrantUSER=vagrantSHELL=/bin/bashINVOCATION_ID=0fcb24d52895405c875cbb9cbc28d3ffJOURNAL_STREAM=9:35758MYVAR=some_valueJOURNAL_STREAM=9:30179vagrant@vagrant:~/node_exporter-1.3.1.linux-amd64$
 	
 Проверка того, что через systemctl процесс корректно стартует, завершается, а после перезагрузки автоматически поднимается.
 
@@ -300,7 +300,7 @@ ulimit -aH заданное значение, и может быть измен�
 	
 ### 7. Найдите информацию о том, что такое :(){ :|:& };:. Запустите эту команду в своей виртуальной машине Vagrant с Ubuntu 20.04 (это важно, поведение в других ОС не проверялось). Некоторое время все будет "плохо", после чего (минуты) – ОС должна стабилизироваться. Вызов dmesg расскажет, какой механизм помог автоматической стабилизации. Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
 
-	\https://wiki.merionet.ru/servernye-resheniya/33/10-komand-linux-kotorye-ubyut-vash-server/
+	https://wiki.merionet.ru/servernye-resheniya/33/10-komand-linux-kotorye-ubyut-vash-server/
 	> :(){ :|:& };: - Логическая бомба (известная также как fork bomb), забивающая память системы, что в итоге приводит к её зависанию.
 	
 	vagrant@vagrant:~$ :(){ :|:& };:
