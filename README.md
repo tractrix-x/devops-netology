@@ -1,273 +1,578 @@
-# devops-netology
-# Для выполнения заданий в этом разделе давайте склонируем репозиторий с исходным кодом терраформа https://github.com/hashicorp/terraform
-# В виде результата напишите текстом ответы на вопросы и каким образом эти ответы были получены.
+# Домашнее задание к занятию "3.5. Файловые системы"
 
-# 1. Найдите полный хеш и комментарий коммита, хеш которого начинается на aefea.
-## $ git show aefea
-## aefead2207ef7e2aa5dc81a34aedf0cad4c32545
+### 1. Узнайте о sparse (разряженных) файлах.
 
->commit aefead2207ef7e2aa5dc81a34aedf0cad4c32545
->Author: Alisdair McDiarmid <alisdair@users.noreply.github.com>
->$ git show aefea
->Date:   Thu Jun 18 10:29:58 2020 -0400
->
->    Update CHANGELOG.md
->
->diff --git a/CHANGELOG.md b/CHANGELOG.md
->index 86d70e3e0..588d807b1 100644
->--- a/CHANGELOG.md
->+++ b/CHANGELOG.md
->@@ -27,6 +27,7 @@ BUG FIXES:
-> * backend/s3: Prefer AWS shared configuration over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Prefer ECS credentials over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Remove hardcoded AWS Provider messaging ([#25134](https://github.com/hashicorp/terraform/issues/25134))
->+* command: Fix bug with global `-v`/`-version`/`--version` flags introduced in 0.13.0beta2 [GH-25277]
-> * command/0.13upgrade: Fix `0.13upgrade` usage help text to include options ([#25127](https://github.com/hashicorp/terraform/issues/25127))
-> * command/0.13upgrade: Do not add source for builtin provider ([#25215](https://github.com/hashicorp/terraform/issues/25215))
-> * command/apply: Fix bug which caused Terraform to silently exit on Windows when using absolute plan path ([#25233](https://github.com/hashicorp/terraform/issues/25233))
+	https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%B7%D1%80%D0%B5%D0%B6%D1%91%D0%BD%D0%BD%D1%8B%D0%B9_%D1%84%D0%B0%D0%B9%D0%BB
+	Спасибо, это очень интересный материал. Ранее этого не знала. 
+	По прочтению, у меня возникла ассоциация по sparse файлам ОС и файлам БД, когда (например в ASE) в заголовке файла (устройства БД) хранятся его размеры, в том числе в страницах, и хранятся данные об пустых страницах этого устройства. 
 
+### 2. Могут ли файлы, являющиеся жесткой ссылкой на один объект, иметь разные права доступа и владельца? Почему?
 
+	Так как жесткая ссылка и объект источник имеют один и тот же inode, то права доступа и владелец будут совпадать.
 
-# 2. Какому тегу соответствует коммит 85024d3?
+### 3. Сделайте vagrant destroy на имеющийся инстанс Ubuntu. Замените содержимое Vagrantfile следующим:
+	
+	Vagrant.configure("2") do |config|
+	config.vm.box = "bento/ubuntu-20.04"
+	config.vm.provider :virtualbox do |vb|
+		lvm_experiments_disk0_path = "/tmp/lvm_experiments_disk0.vmdk"
+		lvm_experiments_disk1_path = "/tmp/lvm_experiments_disk1.vmdk"
+		vb.customize ['createmedium', '--filename', lvm_experiments_disk0_path, '--size', 2560]
+		vb.customize ['createmedium', '--filename', lvm_experiments_disk1_path, '--size', 2560]
+		vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', lvm_experiments_disk0_path]
+		vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', lvm_experiments_disk1_path]
+	end
+	end
+	
+Данная конфигурация создаст новую виртуальную машину с двумя дополнительными неразмеченными дисками по 2.5 Гб.
 
-## git show 85024d3
-## tag: v0.12.23
+	vagrant destroy -f 
+	
+	vagrant@vagrant:~$ df -h
+	Filesystem                  Size  Used Avail Use% Mounted on
+	udev                        447M     0  447M   0% /dev
+	tmpfs                        99M  660K   98M   1% /run
+	/dev/mapper/vgvagrant-root   62G  1.5G   57G   3% /
+	tmpfs                       491M     0  491M   0% /dev/shm
+	tmpfs                       5.0M     0  5.0M   0% /run/lock
+	tmpfs                       491M     0  491M   0% /sys/fs/cgroup
+	/dev/sda1                   511M  4.0K  511M   1% /boot/efi
+	vagrant                     382G  3.8G  378G   1% /vagrant
+	tmpfs                        99M     0   99M   0% /run/user/1000
+	
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm  /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm  [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	sdc                    8:32   0  2.5G  0 disk
+	vagrant@vagrant:~$
+	
+	vagrant@vagrant:~$ sudo fdisk -l
+	Disk /dev/sda: 64 GiB, 68719476736 bytes, 134217728 sectors
+	Disk model: VBOX HARDDISK
+	Units: sectors of 1 * 512 = 512 bytes
+	Sector size (logical/physical): 512 bytes / 512 bytes
+	I/O size (minimum/optimal): 512 bytes / 512 bytes
+	Disklabel type: dos
+	Disk identifier: 0x3f94c461
+	
+	Device     Boot   Start       End   Sectors  Size Id Type
+	/dev/sda1  *       2048   1050623   1048576  512M  b W95 FAT32
+	/dev/sda2       1052670 134215679 133163010 63.5G  5 Extended
+	/dev/sda5       1052672 134215679 133163008 63.5G 8e Linux LVM
+	
+	
+	Disk /dev/sdb: 2.51 GiB, 2684354560 bytes, 5242880 sectors
+	Disk model: VBOX HARDDISK
+	Units: sectors of 1 * 512 = 512 bytes
+	Sector size (logical/physical): 512 bytes / 512 bytes
+	I/O size (minimum/optimal): 512 bytes / 512 bytes
+	
+	
+	Disk /dev/sdc: 2.51 GiB, 2684354560 bytes, 5242880 sectors
+	Disk model: VBOX HARDDISK
+	Units: sectors of 1 * 512 = 512 bytes
+	Sector size (logical/physical): 512 bytes / 512 bytes
+	I/O size (minimum/optimal): 512 bytes / 512 bytes
+	
+	
+	Disk /dev/mapper/vgvagrant-root: 62.55 GiB, 67150807040 bytes, 131153920 sectors
+	Units: sectors of 1 * 512 = 512 bytes
+	Sector size (logical/physical): 512 bytes / 512 bytes
+	I/O size (minimum/optimal): 512 bytes / 512 bytes
+	
+	
+	Disk /dev/mapper/vgvagrant-swap_1: 980 MiB, 1027604480 bytes, 2007040 sectors
+	Units: sectors of 1 * 512 = 512 bytes
+	Sector size (logical/physical): 512 bytes / 512 bytes
+	I/O size (minimum/optimal): 512 bytes / 512 bytes
+	vagrant@vagrant:~$
+	
 
-# 3. Сколько родителей у коммита b8d720? Напишите их хеши.
-## у коммита b8d720 - 2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
+### 4. Используя fdisk, разбейте первый диск на 2 раздела: 2 Гб, оставшееся пространство.
 
->git show b8d720^
->commit 56cd7859e05c36c06b56d013b55a252d0bb7e158
->Merge: 58dcac4b7 ffbcf5581
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Mon Jan 13 13:19:09 2020 -0800
->
->    Merge pull request #23857 from hashicorp/cgriggs01-stable
->
->    [cherry-pick]add checkpoint links
->
->git show b8d720^2
->commit 9ea88f22fc6269854151c571162c5bcf958bee2b
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Tue Jan 21 17:08:06 2020 -0800
->
->    add/update community provider listings
->
->diff --git a/website/docs/providers/type/community-index.html.markdown b/website/docs/providers/type/community-index.html.markdown
->index 6119f048f..675059dd4 100644
->--- a/website/docs/providers/type/community-index.html.markdown
->+++ b/website/docs/providers/type/community-index.html.markdown
->@@ -28,19 +28,23 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Apigee](https://github.com/zambien/terraform-provider-apigee)
-> - [Artifactory](https://github.com/atlassian/terraform-provider-artifactory)
-> - [Auth](https://github.com/Shuttl-Tech/terraform-provider-auth)
->-- [Auth0](https://github.com/bocodigitalmedia/terraform-provider-auth0)
->+- [Auth0](https://github.com/alexkappa/terraform-provider-auth0)
-> - [Automic Continuous Delivery](https://github.com/Automic/terraform-provider-cda)
-> - [AVI](https://github.com/avinetworks/terraform-provider-avi)
-> - [Aviatrix](https://github.com/AviatrixSystems/terraform-provider-aviatrix)
-> - [AWX](https://github.com/mauromedda/terraform-provider-awx)
-> - [Azure Devops](https://github.com/agarciamiravet/terraform-provider-azuredevops)
-> - [Bitbucket Server](https://github.com/gavinbunney/terraform-provider-bitbucketserver)
->+- [CDS](https://github.com/capitalonline/terraform-provider-cds)
-> - [Centreon](https://github.com/smutel/terraform-provider-centreon)
-> - [Checkly](https://github.com/bitfield/terraform-provider-checkly)
-> - [Cherry Servers](https://github.com/cherryservers/terraform-provider-cherryservers)
-> - [Citrix ADC](https://github.com/citrix/terraform-provider-citrixadc)
-> - [Cloud Foundry](https://github.com/cloudfoundry-community/terraform-provider-cf)
->+- [Cloud.dk](https://github.com/danitso/terraform-provider-clouddk)
->+- [Cloudability](https://github.com/skyscrapr/terraform-provider-cloudability)
-> - [CloudAMQP](https://github.com/cloudamqp/terraform-provider)
->+- [Cloudforms](https://github.com/GSLabDev/terraform-provider-cloudforms)
-> - [CloudKarafka](https://github.com/cloudkarafka/terraform-provider)
-> - [CloudMQTT](https://github.com/cloudmqtt/terraform-provider)
-> - [CloudPassage Halo](https://gitlab.com/kiwicom/terraform-provider-cphalo)
->@@ -78,6 +82,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Google Calendar](https://github.com/sethvargo/terraform-provider-googlecalendar)
-> - [Google G Suite](https://github.com/DeviaVir/terraform-provider-gsuite)
-> - [GorillaStack](https://github.com/GorillaStack/terraform-provider-gorillastack)
->+- [Greylog](https://github.com/suzuki-shunsuke/go-graylog)
->+- [Harbor](https://github.com/BESTSELLER/terraform-harbor-provider)
-> - [Hiera](https://github.com/ribbybibby/terraform-provider-hiera)
-> - [HPE OneView](https://github.com/HewlettPackard/terraform-provider-oneview)
-> - [HTTP File Upload](https://github.com/GSLabDev/terraform-provider-httpfileupload)
->@@ -85,6 +91,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [IIJ GIO](https://github.com/iij/terraform-provider-p2pub)
-> - [Infoblox](https://github.com/hiscox/terraform-provider-infoblox)
-> - [InsightOPS](https://github.com/Tweddle-SE-Team/terraform-provider-insight)
->+- [Instana](https://github.com/gessnerfl/terraform-provider-instana)
->...
->
->bil@LAPTOP-GJ376PE7:/mnt/d/devops-netology/terraform/terraform$ git show b8d720^3
->fatal: ambiguous argument 'b8d720^3': unknown revision or path not in the working tree.
->Use '--' to separate paths from revisions, like this:
->'git <command> [<revision>...] -- [<file>...]'
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm  /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm  [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	sdc                    8:32   0  2.5G  0 disk
+	
+	vagrant@vagrant:~$ sudo fdisk /dev/sdb
+	
+	Welcome to fdisk (util-linux 2.34).
+	Changes will remain in memory only, until you decide to write them.
+	Be careful before using the write command.
+	
+	Device does not contain a recognized partition table.
+	Created a new DOS disklabel with disk identifier 0x475357eb.
+	
+	Command (m for help): n
+	Partition type
+	p   primary (0 primary, 0 extended, 4 free)
+	e   extended (container for logical partitions)
+	Select (default p): p
+	Partition number (1-4, default 1):
+	First sector (2048-5242879, default 2048):
+	Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-5242879, default 5242879): +2G
+	
+	Created a new partition 1 of type 'Linux' and of size 2 GiB.
+	
+	Command (m for help): n
+	Partition type
+	p   primary (1 primary, 0 extended, 3 free)
+	e   extended (container for logical partitions)
+	Select (default p):
+	
+	Using default response p.
+	Partition number (2-4, default 2):
+	First sector (4196352-5242879, default 4196352):
+	Last sector, +/-sectors or +/-size{K,M,G,T,P} (4196352-5242879, default 5242879):
+	
+	Created a new partition 2 of type 'Linux' and of size 511 MiB.
+	
+	Command (m for help): w
+	The partition table has been altered.
+	Calling ioctl() to re-read partition table.
+	Syncing disks.
+	
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm  /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm  [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	├─sdb1                 8:17   0    2G  0 part
+	└─sdb2                 8:18   0  511M  0 part
+	sdc                    8:32   0  2.5G  0 disk
+	vagrant@vagrant:~$
+	
 
-# 4. Перечислите хеши и комментарии всех коммитов которые были сделаны между тегами v0.12.23 и v0.12.24.
-## git log --oneline v0.12.23  v0.12.24
-
->git log --oneline v0.12.23  v0.12.24
->33ff1c03b (tag: v0.12.24) v0.12.24
->b14b74c49 [Website] vmc provider links
->3f235065b Update CHANGELOG.md
->6ae64e247 registry: Fix panic when server is unreachable
->5c619ca1b website: Remove links to the getting started guide's old location
->06275647e Update CHANGELOG.md
->d5f9411f5 command: Fix bug when using terraform login on Windows
->4b6d06cc5 Update CHANGELOG.md
->dd01a3507 Update CHANGELOG.md
->225466bc3 Cleanup after v0.12.23 release
->85024d310 (tag: v0.12.23) v0.12.23
->4703cb6c1 Update CHANGELOG.md
->0b4470e0d Cleanup after v0.12.22 release
->18bfd096b (tag: v0.12.22) v0.12.22
->c66cdcf78 backend/plan: Show warnings even without changes (backport) (#24172)
->566be7a3c Update CHANGELOG.md
->d7a9ebf55 Update CHANGELOG.md
->791ebcb8e state mv should always target instance each mode
->c32ff5ec5 Update CHANGELOG.md
->64f328c6a Update CHANGELOG.md
->2cdfa0851 registry: configurable client timeout (#24259)
->f2800851c Update CHANGELOG.md
->ca2facfd9 registry: fix env test cleanup
->c8b8bc3f6 registry: setup client logger
->8cbdddc21 website/docs/commands: document TF_REGISTRY_DISCOVERY_RETRY
->46ec259fa registry: configurable retry client
->eb07dccd0 Merge pull request #24176 from hashicorp/cgriggs01-stable-quorum
->0a32eab6c Merge pull request #24268 from hashicorp/cgriggs01-stable-oktaasa
->adfe8d1e0 Merge pull request #20260 from nlamirault/patch-1
->652774430 Update CHANGELOG.md
->173530d89 (tag: v0.12.21) v0.12.21
->266ba3a0a Update CHANGELOG.md
->8fd9d7696 [Website] Adding community providers
->7c082b034 website: add token setup callout to remote backend docs (#24109)
->1b6ca2884 add Baidu links + okta
->1025b285a website: Private registry is free now
->477203f01 Update CHANGELOG.md
->b6d767a5c terraform: Add test coverage for eval_for_each
->257099324 terraform: detect null values in for_each sets
->00b9f2291 command/login: Fix browser launcher for WSL users
->049f7bf95 Update CHANGELOG.md
->c5f181ccf command: Fix stale lock when exiting early
->8c19ed71c Update CHANGELOG.md
->9f5d3832f Update CHANGELOG.md
->15420a759 Update CHANGELOG.md
->5a503e292 backend/cos: Add TencentCloud backend cos with lock (#22540)
->fb7def460 Update CHANGELOG.md
->86155e1c1 command/workspace delete: release lock after workspace removal warning (#24085)
->e4809d6d8 Update CHANGELOG.md
-
-# 5. Найдите коммит в котором была создана функция func providerSource, ее определение в коде выглядит так func providerSource(...) (вместо троеточего перечислены аргументы).
-
-## 5e06e39fcc86bb622b962c87da84213d3331ddf8
-## git log -SproviderSource --oneline
-## git show 5e06e39fc
-
->git log -SproviderSource --oneline
->5b266dd5c command: Remove the experimental "terraform add" command
->c587384df cli: Restore -lock and -lock-timeout init flags
->583859e51 commands: `terraform add` (#28874)
->5f30efe85 command tests: plan and init (#28616)
->c89004d22 core: Add sensitive provider attrs to JSON plan
->31a5aa187 command/init: Add a new flag `-lockfile=readonly` (#27630)
->bab497912 command/init: Remove the warnings about the "legacy" cache directory
->e70ab09bf command: new cache directory .terraform/providers for providers
->b3f5c7f1e command/init: Read, respect, and update provider dependency locks
->0b734a280 command: Make provider installation interruptible
->9f824c53a command: Better in-house provider install errors
->d8e996436 terraform: Eval module call arguments for import
->87d1fb400 command/init: Display provider validation errors
->6b3d0ee64 add test for terraform version
->dbe139e61 add test for terraform version -json
->b611bd720 reproduction test
->8b279b6f3 plugin/discovery: Remove dead code
->ca4010706 command/init: Better diagnostics for provider 404s
->62d826e06 command/init: Use full config for provider reqs
->ae98bd12a command: Rework 0.13upgrade sub-command
->5af1e6234 main: Honor explicit provider_installation CLI config when present
->269d51148 command/providers: refactor with new provider types and functions
->8c928e835 main: Consult local directories as potential mirrors of providers
->958ea4f7d internal/providercache: Handle built-in providers
->de6c9ccec command/init: Move "vendored provider" test to e2etests
->0af09b23c command: apply and most of import tests passing
->add7006de command: Fix TestInit_pluginDirProviders and _pluginDirProvidersDoesNotGet
->d40085f37 command: Make the tests compile again
->3b0b29ef5 command: Add scaffold for 0.13upgrade command
->18dd1bb4d Mildwonkey/tfconfig upgrade (#23670)
->5e06e39fc Use registry alias to fetch providers
->
->git show 5e06e39fc
->commit 5e06e39fcc86bb622b962c87da84213d3331ddf8
->Author: findkim <kngo@hashicorp.com>
->Date:   Wed Nov 28 10:26:16 2018 -0600
->
->    Use registry alias to fetch providers
->
->diff --git a/plugin/discovery/get.go b/plugin/discovery/get.go
->index 2f6ac1a91..751844e17 100644
->--- a/plugin/discovery/get.go
->+++ b/plugin/discovery/get.go
->@@ -134,6 +134,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->        if len(allVersions.Versions) == 0 {
->                return PluginMeta{}, ErrorNoSuitableVersion
->        }
->+       providerSource := allVersions.ID
->
->        // Filter the list of plugin versions to those which meet the version constraints
->        versions := allowedVersions(allVersions, req)
->@@ -175,7 +176,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                return PluginMeta{}, ErrorNoVersionCompatibleWithPlatform
->        }
->
->-       downloadURLs, err := i.listProviderDownloadURLs(provider, versionMeta.Version)
->+       downloadURLs, err := i.listProviderDownloadURLs(providerSource, versionMeta.Version)
->        providerURL := downloadURLs.DownloadURL
->
->        i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", provider, versionMeta.Version))
->@@ -193,6 +194,9 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                }
->        }
->
->+       printedProviderName := fmt.Sprintf("%s (%s)", provider, providerSource)
->+       i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", printedProviderName, versionMeta.Version))
->+       log.Printf("[DEBUG] getting provider %q version %q", printedProviderName, versionMeta.Version)
->        err = i.install(provider, v, providerURL)
->        if err != nil {
->                return PluginMeta{}, err
->diff --git a/plugin/discovery/get_test.go b/plugin/discovery/get_test.go
->index 534a01fa5..73e8bdd18 100644
->--- a/plugin/discovery/get_test.go
->+++ b/plugin/discovery/get_test.go
->@@ -130,6 +130,7 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
->
-> func testReleaseServer() *httptest.Server {
->        handler := http.NewServeMux()
->+       handler.HandleFunc("/v1/providers/-/", testHandler)
->        handler.HandleFunc("/v1/providers/terraform-providers/", testHandler)
->        handler.HandleFunc("/terraform-provider-template/", testChecksumHandler)
->        handler.HandleFunc("/terraform-provider-badsig/", testChecksumHandler)
->:
->
+### 5. Используя sfdisk, перенесите данную таблицу разделов на второй диск.
 
 
-# 6. Найдите все коммиты в которых была изменена функция globalPluginDirs.
+	vagrant@vagrant:~$ sudo sfdisk -d /dev/sdb | sudo sfdisk --force /dev/sdc
+	Checking that no-one is using this disk right now ... OK
+	
+	Disk /dev/sdc: 2.51 GiB, 2684354560 bytes, 5242880 sectors
+	Disk model: VBOX HARDDISK
+	Units: sectors of 1 * 512 = 512 bytes
+	Sector size (logical/physical): 512 bytes / 512 bytes
+	I/O size (minimum/optimal): 512 bytes / 512 bytes
+	
+	>>> Script header accepted.
+	>>> Script header accepted.
+	>>> Script header accepted.
+	>>> Script header accepted.
+	>>> Created a new DOS disklabel with disk identifier 0x475357eb.
+	/dev/sdc1: Created a new partition 1 of type 'Linux' and of size 2 GiB.
+	/dev/sdc2: Created a new partition 2 of type 'Linux' and of size 511 MiB.
+	/dev/sdc3: Done.
+	
+	New situation:
+	Disklabel type: dos
+	Disk identifier: 0x475357eb
+	
+	Device     Boot   Start     End Sectors  Size Id Type
+	/dev/sdc1          2048 4196351 4194304    2G 83 Linux
+	/dev/sdc2       4196352 5242879 1046528  511M 83 Linux
+	
+	The partition table has been altered.
+	Calling ioctl() to re-read partition table.
+	Syncing disks.
+	vagrant@vagrant:~$
+	
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm  /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm  [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	├─sdb1                 8:17   0    2G  0 part
+	└─sdb2                 8:18   0  511M  0 part
+	sdc                    8:32   0  2.5G  0 disk
+	├─sdc1                 8:33   0    2G  0 part
+	└─sdc2                 8:34   0  511M  0 part
+	vagrant@vagrant:~$
+	
 
-## git log -SglobalPluginDirs --oneline
->35a058fb3 main: configure credentials from the CLI config file
->c0b176109 prevent log output during init
->8364383c3 Push plugin discovery down into command package
+### 6. Соберите mdadm RAID1 на паре разделов 2 Гб.
 
+Создание рейда
+	vagrant@vagrant:~$ sudo mdadm --create --verbose /dev/md0 -l 1 -n 2 /dev/sd{b1,c1}
+	mdadm: Note: this array has metadata at the start and
+    may not be suitable as a boot device.  If you plan to
+    store '/boot' on this device please ensure that
+    your boot-loader understands md/v1.x metadata, or use
+    --metadata=0.90
+	mdadm: size set to 2094080K
+	Continue creating array?
+	Continue creating array? (y/n) y
+	mdadm: Defaulting to version 1.2 metadata
+	mdadm: array /dev/md0 started.
+	
+	vagrant@vagrant:~$ cat /proc/mdstat
+	Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10]
+	md0 : active raid1 sdc1[1] sdb1[0]
+		2094080 blocks super 1.2 [2/2] [UU]
+	
+	unused devices: <none>
+	vagrant@vagrant:~$		
 
-# 7. Кто автор функции synchronizedWriters?
+### 7. Соберите mdadm RAID0 на второй паре маленьких разделов.
 
-## Author: Martin Atkins <mart@degeneration.co.uk>
-## git log -SsynchronizedWriters --oneline
->bdfea50cc remove unused
->fd4f7eb0b remove prefixed io
->5ac311e2a main: synchronize writes to VT100-faker on Windows
+	vagrant@vagrant:~$ sudo mdadm --create --verbose /dev/md1 -l 0 -n 2 /dev/sd{b2,c2}
+	mdadm: chunk size defaults to 512K
+	mdadm: Defaulting to version 1.2 metadata
+	mdadm: array /dev/md1 started.
+	
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part  /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm   /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm   [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	├─sdb1                 8:17   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	└─sdb2                 8:18   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+	sdc                    8:32   0  2.5G  0 disk
+	├─sdc1                 8:33   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	└─sdc2                 8:34   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+	vagrant@vagrant:~$
+		
+	vagrant@vagrant:~$ cat /proc/mdstat
+	Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10]
+	md1 : active raid0 sdc2[1] sdb2[0]
+		1042432 blocks super 1.2 512k chunks
+	
+	md0 : active raid1 sdc1[1] sdb1[0]
+		2094080 blocks super 1.2 [2/2] [UU]
+	
+	unused devices: <none>
+	vagrant@vagrant:~$
 
-##  git show 5ac311e2a
->commit 5ac311e2a91e381e2f52234668b49ba670aa0fe5
->Author: Martin Atkins <mart@degeneration.co.uk>
->Date:   Wed May 3 16:25:41 2017 -0700
->...
+### 8. Создайте 2 независимых PV на получившихся md-устройствах.
+
+	vagrant@vagrant:~$ sudo pvcreate /dev/md1 /dev/md0
+	Physical volume "/dev/md1" successfully created.
+	Physical volume "/dev/md0" successfully created.
+	vagrant@vagrant:~$
+
+### 9. Создайте общую volume-group на этих двух PV.
+
+	vagrant@vagrant:~$ sudo vgcreate vg1 /dev/md1 /dev/md0
+	Volume group "vg1" successfully created
+	vagrant@vagrant:~$
+	
+	vagrant@vagrant:~$ sudo vgdisplay
+	--- Volume group ---
+	VG Name               vgvagrant
+	System ID
+	Format                lvm2
+	Metadata Areas        1
+	Metadata Sequence No  3
+	VG Access             read/write
+	VG Status             resizable
+	MAX LV                0
+	Cur LV                2
+	Open LV               2
+	Max PV                0
+	Cur PV                1
+	Act PV                1
+	VG Size               <63.50 GiB
+	PE Size               4.00 MiB
+	Total PE              16255
+	Alloc PE / Size       16255 / <63.50 GiB
+	Free  PE / Size       0 / 0
+	VG UUID               PaBfZ0-3I0c-iIdl-uXKt-JL4K-f4tT-kzfcyE
+	
+	--- Volume group ---
+	VG Name               vg1
+	System ID
+	Format                lvm2
+	Metadata Areas        2
+	Metadata Sequence No  1
+	VG Access             read/write
+	VG Status             resizable
+	MAX LV                0
+	Cur LV                0
+	Open LV               0
+	Max PV                0
+	Cur PV                2
+	Act PV                2
+	VG Size               <2.99 GiB
+	PE Size               4.00 MiB
+	Total PE              765
+	Alloc PE / Size       0 / 0
+	Free  PE / Size       765 / <2.99 GiB
+	VG UUID               yKm2k4-xSs3-y7zf-tgYx-JfPd-TPCd-gBhVjl
+	
+	vagrant@vagrant:~$
+
+### 10. Создайте LV размером 100 Мб, указав его расположение на PV с RAID0.
+
+	vagrant@vagrant:~$ sudo lvcreate -L 100M vg1 /dev/md1
+	Logical volume "lvol0" created.
+	vagrant@vagrant:~$
+	
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part  /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm   /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm   [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	├─sdb1                 8:17   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	└─sdb2                 8:18   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+		└─vg1-lvol0      253:2    0  100M  0 lvm
+	sdc                    8:32   0  2.5G  0 disk
+	├─sdc1                 8:33   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	└─sdc2                 8:34   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+		└─vg1-lvol0      253:2    0  100M  0 lvm
+	vagrant@vagrant:~$
+
+### 11. Создайте mkfs.ext4 ФС на получившемся LV.
+
+	vagrant@vagrant:~$ sudo mkfs.ext4 /dev/vg1/lvol0
+	mke2fs 1.45.5 (07-Jan-2020)
+	Creating filesystem with 25600 4k blocks and 25600 inodes
+	
+	Allocating group tables: done
+	Writing inode tables: done
+	Creating journal (1024 blocks): done
+	Writing superblocks and filesystem accounting information: done
+	
+	vagrant@vagrant:~$
+
+### 12. Смонтируйте этот раздел в любую директорию, например, /tmp/new.
+
+	vagrant@vagrant:~$ mkfs.ext4 /dev/vg1/lvol0
+	mke2fs 1.45.5 (07-Jan-2020)
+	Could not open /dev/vg1/lvol0: Permission denied
+	vagrant@vagrant:~$ sudo mkfs.ext4 /dev/vg1/lvol0
+	mke2fs 1.45.5 (07-Jan-2020)
+	Creating filesystem with 25600 4k blocks and 25600 inodes
+	
+	Allocating group tables: done
+	Writing inode tables: done
+	Creating journal (1024 blocks): done
+	Writing superblocks and filesystem accounting information: done
+	
+	vagrant@vagrant:~$ mkdir /tmp/new
+	vagrant@vagrant:~$ ll /tmp/new
+	total 8
+	drwxrwxr-x  2 vagrant vagrant 4096 Feb  2 05:38 ./
+	drwxrwxrwt 10 root    root    4096 Feb  2 05:38 ../
+	vagrant@vagrant:~$ sudo mount /dev/vg1/lvol0 /tmp/new
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part  /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm   /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm   [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	├─sdb1                 8:17   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	└─sdb2                 8:18   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+		└─vg1-lvol0      253:2    0  100M  0 lvm   /tmp/new
+	sdc                    8:32   0  2.5G  0 disk
+	├─sdc1                 8:33   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	└─sdc2                 8:34   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+		└─vg1-lvol0      253:2    0  100M  0 lvm   /tmp/new
+	vagrant@vagrant:~$
+	
+	
+### 13. Поместите туда тестовый файл, например wget https://mirror.yandex.ru/ubuntu/ls-lR.gz -O /tmp/new/test.gz.
+
+	vagrant@vagrant:~$ wget https://mirror.yandex.ru/ubuntu/ls-lR.gz -O /tmp/new/test.gz.
+	/tmp/new/test.gz.: Permission denied
+	vagrant@vagrant:~$ sudo wget https://mirror.yandex.ru/ubuntu/ls-lR.gz -O /tmp/new/test.gz.
+	--2022-02-02 05:39:38--  https://mirror.yandex.ru/ubuntu/ls-lR.gz
+	Resolving mirror.yandex.ru (mirror.yandex.ru)... 213.180.204.183, 2a02:6b8::183
+	Connecting to mirror.yandex.ru (mirror.yandex.ru)|213.180.204.183|:443... connected.
+	HTTP request sent, awaiting response... 200 OK
+	Length: 22133788 (21M) [application/octet-stream]
+	Saving to: ‘/tmp/new/test.gz.’
+	
+	/tmp/new/test.gz.             100%[=================================================>]  21.11M  4.00MB/s    in 7.8s
+	
+	2022-02-02 05:39:46 (2.70 MB/s) - ‘/tmp/new/test.gz.’ saved [22133788/22133788]
+	
+	vagrant@vagrant:~$ ll /tmp/new
+	total 21640
+	drwxr-xr-x  3 root root     4096 Feb  2 05:39 ./
+	drwxrwxrwt 10 root root     4096 Feb  2 05:38 ../
+	drwx------  2 root root    16384 Feb  2 05:37 lost+found/
+	-rw-r--r--  1 root root 22133788 Feb  2 04:36 test.gz.
+	vagrant@vagrant:~$
+
+### 14. Прикрепите вывод lsblk.
+
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part  /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm   /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm   [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	├─sdb1                 8:17   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	└─sdb2                 8:18   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+		└─vg1-lvol0      253:2    0  100M  0 lvm   /tmp/new
+	sdc                    8:32   0  2.5G  0 disk
+	├─sdc1                 8:33   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	└─sdc2                 8:34   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+		└─vg1-lvol0      253:2    0  100M  0 lvm   /tmp/new
+	vagrant@vagrant:~$
+
+### 15. Протестируйте целостность файла:
+root@vagrant:~# gzip -t /tmp/new/test.gz
+root@vagrant:~# echo $?
+0
+
+	vagrant@vagrant:~$ ll /tmp/new/test.gz.
+	-rw-r--r-- 1 root root 22133788 Feb  2 04:36 /tmp/new/test.gz.
+	vagrant@vagrant:~$ gzip -t /tmp/new/test.gz.
+	vagrant@vagrant:~$ echo $?
+	0
+	vagrant@vagrant:~$
+
+### 16. Используя pvmove, переместите содержимое PV с RAID0 на RAID1.
+
+vagrant@vagrant:~$ sudo pvmove -n /dev/vg1/lvol0 /dev/md1 /dev/md0
+  /dev/md1: Moved: 72.00%
+  /dev/md1: Moved: 100.00%
+vagrant@vagrant:~$
+
+	vagrant@vagrant:~$ lsblk
+	NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+	sda                    8:0    0   64G  0 disk
+	├─sda1                 8:1    0  512M  0 part  /boot/efi
+	├─sda2                 8:2    0    1K  0 part
+	└─sda5                 8:5    0 63.5G  0 part
+	├─vgvagrant-root   253:0    0 62.6G  0 lvm   /
+	└─vgvagrant-swap_1 253:1    0  980M  0 lvm   [SWAP]
+	sdb                    8:16   0  2.5G  0 disk
+	├─sdb1                 8:17   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	│   └─vg1-lvol0      253:2    0  100M  0 lvm   /tmp/new
+	└─sdb2                 8:18   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+	sdc                    8:32   0  2.5G  0 disk
+	├─sdc1                 8:33   0    2G  0 part
+	│ └─md0                9:0    0    2G  0 raid1
+	│   └─vg1-lvol0      253:2    0  100M  0 lvm   /tmp/new
+	└─sdc2                 8:34   0  511M  0 part
+	└─md1                9:1    0 1018M  0 raid0
+	vagrant@vagrant:~$
+
+### 17. Сделайте --fail на устройство в вашем RAID1 md.
+
+	
+	vagrant@vagrant:~$ sudo mdadm /dev/md0 --fail /dev/sdb1
+	mdadm: set /dev/sdb1 faulty in /dev/md0
+	vagrant@vagrant:~$
+	
+	vagrant@vagrant:~$ sudo mdadm -D /dev/md0
+	/dev/md0:
+			Version : 1.2
+		Creation Time : Wed Feb  2 05:19:15 2022
+			Raid Level : raid1
+			Array Size : 2094080 (2045.00 MiB 2144.34 MB)
+		Used Dev Size : 2094080 (2045.00 MiB 2144.34 MB)
+		Raid Devices : 2
+		Total Devices : 2
+		Persistence : Superblock is persistent
+	
+		Update Time : Wed Feb  2 08:50:34 2022
+				State : clean, degraded
+		Active Devices : 1
+	Working Devices : 1
+		Failed Devices : 1
+		Spare Devices : 0
+	
+	Consistency Policy : resync
+	
+				Name : vagrant:0  (local to host vagrant)
+				UUID : c3bd0da9:abdad700:82e1a139:d96b5a13
+				Events : 19
+	
+		Number   Major   Minor   RaidDevice State
+		-       0        0        0      removed
+		1       8       33        1      active sync   /dev/sdc1
+	
+		0       8       17        -      faulty   /dev/sdb1
+	vagrant@vagrant:~$
+	
+
+### 18. Подтвердите выводом dmesg, что RAID1 работает в деградированном состоянии.
+
+	vagrant@vagrant:~$ dmesg |grep md0
+	[ 1473.174259] md/raid1:md0: not clean -- starting background reconstruction
+	[ 1473.174261] md/raid1:md0: active with 2 out of 2 mirrors
+	[ 1473.174285] md0: detected capacity change from 0 to 2144337920
+	[ 1473.178706] md: resync of RAID array md0
+	[ 1486.426427] md: md0: resync done.
+	[ 6868.751948] md/raid1:md0: Disk failure on sdb1, disabling device.
+				md/raid1:md0: Operation continuing on 1 devices.
+	vagrant@vagrant:~$
+
+### 19. Протестируйте целостность файла, несмотря на "сбойный" диск он должен продолжать быть доступен:
+root@vagrant:~# gzip -t /tmp/new/test.gz
+root@vagrant:~# echo $?
+0
+
+	vagrant@vagrant:~$ gzip -t /tmp/new/test.gz.
+	vagrant@vagrant:~$ echo $?
+	0
+	vagrant@vagrant:~$
+
+### 20. Погасите тестовый хост, vagrant destroy.
+
+	vagrant@vagrant:~$ exit
+	logout
+	Connection to 127.0.0.1 closed.
+	PS D:\devops-netology\vagrant project> vagrant destroy
+		default: Are you sure you want to destroy the 'default' VM? [y/N] y
+	==> default: Forcing shutdown of VM...
+	==> default: Destroying VM and associated drives...
+	PS D:\devops-netology\vagrant project>
+	
+
