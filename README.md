@@ -463,8 +463,8 @@
 	vagrant@vagrant:~$
 
 ### 15. Протестируйте целостность файла:
->root@vagrant:~/# gzip -t /tmp/new/test.gz
->root@vagrant:~/# echo $?
+>root@vagrant:~ gzip -t /tmp/new/test.gz
+>root@vagrant:~ echo $?
 >0
 
 	vagrant@vagrant:~$ ll /tmp/new/test.gz.
@@ -476,10 +476,10 @@
 
 ### 16. Используя pvmove, переместите содержимое PV с RAID0 на RAID1.
 
-vagrant@vagrant:~$ sudo pvmove -n /dev/vg1/lvol0 /dev/md1 /dev/md0
-  /dev/md1: Moved: 72.00%
-  /dev/md1: Moved: 100.00%
-vagrant@vagrant:~$
+	vagrant@vagrant:~$ sudo pvmove -n /dev/vg1/lvol0 /dev/md1 /dev/md0
+	/dev/md1: Moved: 72.00%
+	/dev/md1: Moved: 100.00%
+	vagrant@vagrant:~$
 
 	vagrant@vagrant:~$ lsblk
 	NAME                 MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
@@ -555,8 +555,8 @@ vagrant@vagrant:~$
 	vagrant@vagrant:~$
 
 ### 19. Протестируйте целостность файла, несмотря на "сбойный" диск он должен продолжать быть доступен:
->root@vagrant:~/# gzip -t /tmp/new/test.gz
->root@vagrant:~/# echo $?
+>root@vagrant:~ gzip -t /tmp/new/test.gz
+>root@vagrant:~ echo $?
 >0
 
 	vagrant@vagrant:~$ gzip -t /tmp/new/test.gz.
