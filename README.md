@@ -463,9 +463,9 @@
 	vagrant@vagrant:~$
 
 ### 15. Протестируйте целостность файла:
-root@vagrant:~# gzip -t /tmp/new/test.gz
-root@vagrant:~# echo $?
-0
+>root@vagrant:~/# gzip -t /tmp/new/test.gz
+>root@vagrant:~/# echo $?
+>0
 
 	vagrant@vagrant:~$ ll /tmp/new/test.gz.
 	-rw-r--r-- 1 root root 22133788 Feb  2 04:36 /tmp/new/test.gz.
@@ -555,9 +555,9 @@ vagrant@vagrant:~$
 	vagrant@vagrant:~$
 
 ### 19. Протестируйте целостность файла, несмотря на "сбойный" диск он должен продолжать быть доступен:
-root@vagrant:~# gzip -t /tmp/new/test.gz
-root@vagrant:~# echo $?
-0
+>root@vagrant:~/# gzip -t /tmp/new/test.gz
+>root@vagrant:~/# echo $?
+>0
 
 	vagrant@vagrant:~$ gzip -t /tmp/new/test.gz.
 	vagrant@vagrant:~$ echo $?
