@@ -1,273 +1,458 @@
-# devops-netology
-# Для выполнения заданий в этом разделе давайте склонируем репозиторий с исходным кодом терраформа https://github.com/hashicorp/terraform
-# В виде результата напишите текстом ответы на вопросы и каким образом эти ответы были получены.
+# Домашнее задание к занятию "3.6. Компьютерные сети, лекция 1"
 
-# 1. Найдите полный хеш и комментарий коммита, хеш которого начинается на aefea.
-## $ git show aefea
-## aefead2207ef7e2aa5dc81a34aedf0cad4c32545
+### 1. Работа c HTTP через телнет.
 
->commit aefead2207ef7e2aa5dc81a34aedf0cad4c32545
->Author: Alisdair McDiarmid <alisdair@users.noreply.github.com>
->$ git show aefea
->Date:   Thu Jun 18 10:29:58 2020 -0400
->
->    Update CHANGELOG.md
->
->diff --git a/CHANGELOG.md b/CHANGELOG.md
->index 86d70e3e0..588d807b1 100644
->--- a/CHANGELOG.md
->+++ b/CHANGELOG.md
->@@ -27,6 +27,7 @@ BUG FIXES:
-> * backend/s3: Prefer AWS shared configuration over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Prefer ECS credentials over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Remove hardcoded AWS Provider messaging ([#25134](https://github.com/hashicorp/terraform/issues/25134))
->+* command: Fix bug with global `-v`/`-version`/`--version` flags introduced in 0.13.0beta2 [GH-25277]
-> * command/0.13upgrade: Fix `0.13upgrade` usage help text to include options ([#25127](https://github.com/hashicorp/terraform/issues/25127))
-> * command/0.13upgrade: Do not add source for builtin provider ([#25215](https://github.com/hashicorp/terraform/issues/25215))
-> * command/apply: Fix bug which caused Terraform to silently exit on Windows when using absolute plan path ([#25233](https://github.com/hashicorp/terraform/issues/25233))
+Подключитесь утилитой телнет к сайту stackoverflow.com `telnet stackoverflow.com 80`
+отправьте HTTP запрос:
+	GET /questions HTTP/1.0
+	HOST: stackoverflow.com
+	[press enter]
+	[press enter]
+	
+	vagrant@vagrant:~$ telnet stackoverflow.com 80
+	Trying 151.101.65.69...
+	Connected to stackoverflow.com.
+	Escape character is '^]'.
+	GET /questions HTTP/1.0
+	HOST: stackoverflow.com
+	
+	HTTP/1.1 301 Moved Permanently
+	cache-control: no-cache, no-store, must-revalidate
+	location: https://stackoverflow.com/questions
+	x-request-guid: 6bdb2b25-e18c-4a64-8c09-a14f8e22dadd
+	feature-policy: microphone 'none'; speaker 'none'
+	content-security-policy: upgrade-insecure-requests; frame-ancestors 'self' https://stackexchange.com
+	Accept-Ranges: bytes
+	Date: Tue, 08 Feb 2022 13:21:38 GMT
+	Via: 1.1 varnish
+	Connection: close
+	X-Served-By: cache-fra19137-FRA
+	X-Cache: MISS
+	X-Cache-Hits: 0
+	X-Timer: S1644326498.983354,VS0,VE85
+	Vary: Fastly-SSL
+	X-DNS-Prefetch-Control: off
+	Set-Cookie: prov=f966eed3-48b0-99f9-9aa7-0759a30b927a; domain=.stackoverflow.com; expires=Fri, 01-Jan-2055 00:00:00 GMT; path=/; HttpOnly
+	
+	Connection closed by foreign host.
+	vagrant@vagrant:~$
+	
+В ответе укажите полученный HTTP код, что он означает?
+Сайт переехал навсегда по адресу в location
+
+	HTTP/1.1 301 Moved Permanently
+	...
+	location: https://stackoverflow.com/questions
+
+### 2. Повторите задание 1 в браузере, используя консоль разработчика F12.
+откройте вкладку Network
+отправьте запрос `http://stackoverflow.com`
+найдите первый ответ HTTP сервера, откройте вкладку Headers
+
+	URL-адрес запроса: http://stackoverflow.com/
+	Метод запроса: GET
+	Код состояния: 307 Internal Redirect
+	Политика источника ссылки: strict-origin-when-cross-origin
+	Location: https://stackoverflow.com/
+	Non-Authoritative-Reason: HSTS
+	Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+	Upgrade-Insecure-Requests: 1
+	User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36 Edg/98.0.1108.43
+
+укажите в ответе полученный HTTP код.
+
+	Код состояния: 307 Internal Redirect
+
+проверьте время загрузки страницы, какой запрос обрабатывался дольше всего?
+
+Запрос картинки с stackoverflow.com - 871 мс
+	:authority: stackoverflow.com
+	:method: GET
+	:path: /
+	:scheme: https
+	accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+	accept-encoding: gzip, deflate, br
+	accept-language: ru,en;q=0.9,en-GB;q=0.8,en-US;q=0.7
+	cookie: prov=d81afeb0-e707-7ea9-b7fa-99d4b931f4c9; _ga=GA1.2.1485186023.1638977320; OptanonAlertBoxClosed=2022-01-26T15:29:20.793Z; OptanonConsent=isIABGlobal=false&datestamp=Wed+Jan+26+2022+20%3A29%3A20+GMT%2B0500+(%D0%95%D0%BA%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%BD%D0%B1%D1%83%D1%80%D0%B3%2C+%D1%81%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%BD%D0%BE%D0%B5+%D0%B2%D1%80%D0%B5%D0%BC%D1%8F)&version=6.10.0&hosts=&landingPath=NotLandingPage&groups=C0003%3A1%2CC0004%3A1%2CC0002%3A1%2CC0001%3A1; _ym_uid=1643277070656890894; _ym_d=1643277070; __gads=ID=e998c0a1f417042b-223575602dcd00a3:T=1643211474:S=ALNI_MavisDNL6Uty72evZPmAnTVhTSECQ; mfnes=b299CAkQARoLCM6i4KH2w7U6EAUyCDQ3OTk0NTI3; _gid=GA1.2.1114755223.1644326382; _gat=1
+	sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="98", "Microsoft Edge";v="98"
+	sec-ch-ua-mobile: ?0
+	sec-ch-ua-platform: "Windows"
+	sec-fetch-dest: document
+	sec-fetch-mode: navigate
+	sec-fetch-site: none
+	sec-fetch-user: ?1
+	upgrade-insecure-requests: 1
+	user-agent: Mozilla/5.0 (W
+
+приложите скриншот консоли браузера в ответ.
+
+(img/dz_net_01-2-long.jpg)
+
+### 3. Какой IP адрес у вас в интернете?
+
+94.50.223.169
+ 
+(img/dz_net_01-3-my_ip.jpg)
+
+### 4. Какому провайдеру принадлежит ваш IP адрес? Какой автономной системе AS? Воспользуйтесь утилитой `whois`
+
+	vagrant@vagrant:~$ sudo apt-get install whois
+	Reading package lists... Done
+	Building dependency tree
+	Reading state information... Done
+	The following NEW packages will be installed:
+	whois
+	0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+	Need to get 44.7 kB of archives.
+	After this operation, 279 kB of additional disk space will be used.
+	Get:1 http://archive.ubuntu.com/ubuntu focal/main amd64 whois amd64 5.5.6 [44.7 kB]
+	Fetched 44.7 kB in 1s (40.7 kB/s)
+	Selecting previously unselected package whois.
+	(Reading database ... 41552 files and directories currently installed.)
+	Preparing to unpack .../archives/whois_5.5.6_amd64.deb ...
+	Unpacking whois (5.5.6) ...
+	Setting up whois (5.5.6) ...
+	Processing triggers for man-db (2.9.1-1) ...
+	vagrant@vagrant:~$
+
+Провайдер `descr:          OJSC RosteleÓom, regional branch "Urals"`, `origin:         AS12389`
+
+	vagrant@vagrant:~$ whois 94.50.223.169
+	% This is the RIPE Database query service.
+	% The objects are in RPSL format.
+	%
+	% The RIPE Database is subject to Terms and Conditions.
+	% See http://www.ripe.net/db/support/db-terms-conditions.pdf
+	
+	% Note: this output has been filtered.
+	%       To receive output for a database update, use the "-B" flag.
+	
+	% Information related to '94.50.208.0 - 94.50.223.255'
+	
+	% Abuse contact for '94.50.208.0 - 94.50.223.255' is 'abuse@rt.ru'
+	
+	inetnum:        94.50.208.0 - 94.50.223.255
+	netname:        USI_ADSL_USERS
+	descr:          Dynamic distribution IP's for broadband services
+	descr:          OJSC RosteleÓom, regional branch "Urals"
+	country:        RU
+	admin-c:        UPAS1-RIPE
+	tech-c:         UPAS1-RIPE
+	status:         ASSIGNED PA
+	mnt-by:         MFIST-MNT
+	created:        2009-01-14T07:24:00Z
+	last-modified:  2012-03-06T13:48:31Z
+	source:         RIPE
+	
+	role:           Uralsvyazinform Perm Administration Staff
+	address:        11, Moskovskaya str.
+	address:        Yekaterinburg, 620014
+	address:        Russian Federation
+	admin-c:        SK2534-RIPE
+	admin-c:        DK2192-RIPE
+	admin-c:        SK3575-RIPE
+	admin-c:        TA2344-RIPE
+	tech-c:         DK2192-RIPE
+	tech-c:         SK3575-RIPE
+	tech-c:         TA2344-RIPE
+	nic-hdl:        UPAS1-RIPE
+	mnt-by:         MFIST-MNT
+	created:        2007-09-18T08:50:24Z
+	last-modified:  2019-02-14T06:36:03Z
+	source:         RIPE # Filtered
+	
+		% Information related to '94.50.208.0/20AS12389'
+		
+	route:          94.50.208.0/20
+	descr:          Rostelecom networks
+	origin:         AS12389
+	mnt-by:         ROSTELECOM-MNT
+	created:        2018-10-31T11:47:25Z
+	last-modified:  2018-10-31T11:47:25Z
+	source:         RIPE # Filtered
+	
+	% This query was served by the RIPE Database Query Service version 1.102.2 (ANGUS)
+	
+	
+	vagrant@vagrant:~$
+
+### 5. Через какие сети проходит пакет, отправленный с вашего компьютера на адрес `8.8.8.8`? Через какие AS? Воспользуйтесь утилитой traceroute
+
+	vagrant@vagrant:~$ sudo apt-get install traceroute
+	Reading package lists... Done
+	Building dependency tree
+	Reading state information... Done
+	The following NEW packages will be installed:
+	traceroute
+	0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+	Need to get 45.4 kB of archives.
+	After this operation, 152 kB of additional disk space will be used.
+	Get:1 http://archive.ubuntu.com/ubuntu focal/universe amd64 traceroute amd64 1:2.1.0-2 [45.4 kB]
+	Fetched 45.4 kB in 2s (22.6 kB/s)
+	Selecting previously unselected package traceroute.
+	(Reading database ... 41561 files and directories currently installed.)
+	Preparing to unpack .../traceroute_1%3a2.1.0-2_amd64.deb ...
+	Unpacking traceroute (1:2.1.0-2) ...
+	Setting up traceroute (1:2.1.0-2) ...
+	update-alternatives: using /usr/bin/traceroute.db to provide /usr/bin/traceroute (traceroute) in auto mode
+	update-alternatives: using /usr/bin/lft.db to provide /usr/bin/lft (lft) in auto mode
+	update-alternatives: using /usr/bin/traceproto.db to provide /usr/bin/traceproto (traceproto) in auto mode
+	update-alternatives: using /usr/sbin/tcptraceroute.db to provide /usr/sbin/tcptraceroute (tcptraceroute) in auto mode
+	Processing triggers for man-db (2.9.1-1) ...
+	vagrant@vagrant:~$
+
+	vagrant@vagrant:~$ traceroute -An 8.8.8.8
+	traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
+	1  10.0.2.2 [*]  0.671 ms  0.528 ms  0.414 ms
+	2  * * *
+	3  * * *
+	4  * * *
+	5  * * *
+	6  * * *
+	7  * * *
+	8  * * *
+	9  * * *
+	10  * * *
+	11  * * *
+	12  * * *
+	13  * * *
+	14  * * *
+	15  * * *
+	16  * * *
+	17  * * *
+	18  * * *
+	19  * * *
+	20  * * *
+	21  * * *
+	22  * * *
+	23  * * *
+	24  * * *
+	25  * * *
+	26  * * *
+	27  * * *
+	28  * * *
+	29  * * *
+	30  * * *
+	vagrant@vagrant:~$
+	
+
+### 6. Повторите задание 5 в утилите `mtr`. На каком участке наибольшая задержка - `delay`?
+
+	vagrant@vagrant:~$ mtr 8.8.8.8
+
+(img/dz_net_01-8-mtr.jpg)	
+	
+На участке 8	
+	
+	8. 142.251.71.194
+
+### 7. Какие DNS сервера отвечают за доменное имя dns.google? Какие A записи? воспользуйтесь утилитой `dig`
+	
+	vagrant@vagrant:~$ dig NS google.com
+	
+	; <<>> DiG 9.16.1-Ubuntu <<>> NS google.com
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 62469
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 65494
+	;; QUESTION SECTION:
+	;google.com.                    IN      NS
+	
+	;; ANSWER SECTION:
+	google.com.             59951   IN      NS      ns3.google.com.
+	google.com.             59951   IN      NS      ns4.google.com.
+	google.com.             59951   IN      NS      ns1.google.com.
+	google.com.             59951   IN      NS      ns2.google.com.
+	
+	;; Query time: 16 msec
+	;; SERVER: 127.0.0.53#53(127.0.0.53)
+	;; WHEN: Tue Feb 08 14:12:25 UTC 2022
+	;; MSG SIZE  rcvd: 111
+	
+	vagrant@vagrant:~$
 
 
+	vagrant@vagrant:~$ dig A google.com
+	
+	; <<>> DiG 9.16.1-Ubuntu <<>> A google.com
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 60511
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 6, AUTHORITY: 0, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 65494
+	;; QUESTION SECTION:
+	;google.com.                    IN      A
+	
+	;; ANSWER SECTION:
+	google.com.             141     IN      A       64.233.162.100
+	google.com.             141     IN      A       64.233.162.113
+	google.com.             141     IN      A       64.233.162.139
+	google.com.             141     IN      A       64.233.162.101
+	google.com.             141     IN      A       64.233.162.102
+	google.com.             141     IN      A       64.233.162.138
+	
+	;; Query time: 20 msec
+	;; SERVER: 127.0.0.53#53(127.0.0.53)
+	;; WHEN: Tue Feb 08 14:14:06 UTC 2022
+	;; MSG SIZE  rcvd: 135
+	
+	vagrant@vagrant:~$
 
-# 2. Какому тегу соответствует коммит 85024d3?
+	
+### 8. Проверьте PTR записи для IP адресов из задания 7. Какое доменное имя привязано к IP? воспользуйтесь утилитой `dig`
 
-## git show 85024d3
-## tag: v0.12.23
+Для ip 64.233.162.100 привязано имя `li-in-f100.1e100.net.`
 
-# 3. Сколько родителей у коммита b8d720? Напишите их хеши.
-## у коммита b8d720 - 2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
+	vagrant@vagrant:~$ dig -x 64.233.162.100
+	
+	; <<>> DiG 9.16.1-Ubuntu <<>> -x 64.233.162.100
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 34759
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 65494
+	;; QUESTION SECTION:
+	;100.162.233.64.in-addr.arpa.   IN      PTR
+	
+	;; ANSWER SECTION:
+	100.162.233.64.in-addr.arpa. 22587 IN   PTR     li-in-f100.1e100.net.
+	
+	;; Query time: 20 msec
+	;; SERVER: 127.0.0.53#53(127.0.0.53)
+	;; WHEN: Tue Feb 08 14:16:45 UTC 2022
+	;; MSG SIZE  rcvd: 90
+	
+	vagrant@vagrant:~$
 
->git show b8d720^
->commit 56cd7859e05c36c06b56d013b55a252d0bb7e158
->Merge: 58dcac4b7 ffbcf5581
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Mon Jan 13 13:19:09 2020 -0800
->
->    Merge pull request #23857 from hashicorp/cgriggs01-stable
->
->    [cherry-pick]add checkpoint links
->
->git show b8d720^2
->commit 9ea88f22fc6269854151c571162c5bcf958bee2b
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Tue Jan 21 17:08:06 2020 -0800
->
->    add/update community provider listings
->
->diff --git a/website/docs/providers/type/community-index.html.markdown b/website/docs/providers/type/community-index.html.markdown
->index 6119f048f..675059dd4 100644
->--- a/website/docs/providers/type/community-index.html.markdown
->+++ b/website/docs/providers/type/community-index.html.markdown
->@@ -28,19 +28,23 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Apigee](https://github.com/zambien/terraform-provider-apigee)
-> - [Artifactory](https://github.com/atlassian/terraform-provider-artifactory)
-> - [Auth](https://github.com/Shuttl-Tech/terraform-provider-auth)
->-- [Auth0](https://github.com/bocodigitalmedia/terraform-provider-auth0)
->+- [Auth0](https://github.com/alexkappa/terraform-provider-auth0)
-> - [Automic Continuous Delivery](https://github.com/Automic/terraform-provider-cda)
-> - [AVI](https://github.com/avinetworks/terraform-provider-avi)
-> - [Aviatrix](https://github.com/AviatrixSystems/terraform-provider-aviatrix)
-> - [AWX](https://github.com/mauromedda/terraform-provider-awx)
-> - [Azure Devops](https://github.com/agarciamiravet/terraform-provider-azuredevops)
-> - [Bitbucket Server](https://github.com/gavinbunney/terraform-provider-bitbucketserver)
->+- [CDS](https://github.com/capitalonline/terraform-provider-cds)
-> - [Centreon](https://github.com/smutel/terraform-provider-centreon)
-> - [Checkly](https://github.com/bitfield/terraform-provider-checkly)
-> - [Cherry Servers](https://github.com/cherryservers/terraform-provider-cherryservers)
-> - [Citrix ADC](https://github.com/citrix/terraform-provider-citrixadc)
-> - [Cloud Foundry](https://github.com/cloudfoundry-community/terraform-provider-cf)
->+- [Cloud.dk](https://github.com/danitso/terraform-provider-clouddk)
->+- [Cloudability](https://github.com/skyscrapr/terraform-provider-cloudability)
-> - [CloudAMQP](https://github.com/cloudamqp/terraform-provider)
->+- [Cloudforms](https://github.com/GSLabDev/terraform-provider-cloudforms)
-> - [CloudKarafka](https://github.com/cloudkarafka/terraform-provider)
-> - [CloudMQTT](https://github.com/cloudmqtt/terraform-provider)
-> - [CloudPassage Halo](https://gitlab.com/kiwicom/terraform-provider-cphalo)
->@@ -78,6 +82,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Google Calendar](https://github.com/sethvargo/terraform-provider-googlecalendar)
-> - [Google G Suite](https://github.com/DeviaVir/terraform-provider-gsuite)
-> - [GorillaStack](https://github.com/GorillaStack/terraform-provider-gorillastack)
->+- [Greylog](https://github.com/suzuki-shunsuke/go-graylog)
->+- [Harbor](https://github.com/BESTSELLER/terraform-harbor-provider)
-> - [Hiera](https://github.com/ribbybibby/terraform-provider-hiera)
-> - [HPE OneView](https://github.com/HewlettPackard/terraform-provider-oneview)
-> - [HTTP File Upload](https://github.com/GSLabDev/terraform-provider-httpfileupload)
->@@ -85,6 +91,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [IIJ GIO](https://github.com/iij/terraform-provider-p2pub)
-> - [Infoblox](https://github.com/hiscox/terraform-provider-infoblox)
-> - [InsightOPS](https://github.com/Tweddle-SE-Team/terraform-provider-insight)
->+- [Instana](https://github.com/gessnerfl/terraform-provider-instana)
->...
->
->bil@LAPTOP-GJ376PE7:/mnt/d/devops-netology/terraform/terraform$ git show b8d720^3
->fatal: ambiguous argument 'b8d720^3': unknown revision or path not in the working tree.
->Use '--' to separate paths from revisions, like this:
->'git <command> [<revision>...] -- [<file>...]'
+Для ip 64.233.162.113 привязано имя `li-in-f113.1e100.net.`
 
-# 4. Перечислите хеши и комментарии всех коммитов которые были сделаны между тегами v0.12.23 и v0.12.24.
-## git log --oneline v0.12.23  v0.12.24
+	vagrant@vagrant:~$ dig -x 64.233.162.113
+	
+	; <<>> DiG 9.16.1-Ubuntu <<>> -x 64.233.162.113
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 4925
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 65494
+	;; QUESTION SECTION:
+	;113.162.233.64.in-addr.arpa.   IN      PTR
+	
+	;; ANSWER SECTION:
+	113.162.233.64.in-addr.arpa. 23591 IN   PTR     li-in-f113.1e100.net.
+	
+	;; Query time: 12 msec
+	;; SERVER: 127.0.0.53#53(127.0.0.53)
+	;; WHEN: Tue Feb 08 14:18:21 UTC 2022
+	;; MSG SIZE  rcvd: 90
+	
+	vagrant@vagrant:~$
 
->git log --oneline v0.12.23  v0.12.24
->33ff1c03b (tag: v0.12.24) v0.12.24
->b14b74c49 [Website] vmc provider links
->3f235065b Update CHANGELOG.md
->6ae64e247 registry: Fix panic when server is unreachable
->5c619ca1b website: Remove links to the getting started guide's old location
->06275647e Update CHANGELOG.md
->d5f9411f5 command: Fix bug when using terraform login on Windows
->4b6d06cc5 Update CHANGELOG.md
->dd01a3507 Update CHANGELOG.md
->225466bc3 Cleanup after v0.12.23 release
->85024d310 (tag: v0.12.23) v0.12.23
->4703cb6c1 Update CHANGELOG.md
->0b4470e0d Cleanup after v0.12.22 release
->18bfd096b (tag: v0.12.22) v0.12.22
->c66cdcf78 backend/plan: Show warnings even without changes (backport) (#24172)
->566be7a3c Update CHANGELOG.md
->d7a9ebf55 Update CHANGELOG.md
->791ebcb8e state mv should always target instance each mode
->c32ff5ec5 Update CHANGELOG.md
->64f328c6a Update CHANGELOG.md
->2cdfa0851 registry: configurable client timeout (#24259)
->f2800851c Update CHANGELOG.md
->ca2facfd9 registry: fix env test cleanup
->c8b8bc3f6 registry: setup client logger
->8cbdddc21 website/docs/commands: document TF_REGISTRY_DISCOVERY_RETRY
->46ec259fa registry: configurable retry client
->eb07dccd0 Merge pull request #24176 from hashicorp/cgriggs01-stable-quorum
->0a32eab6c Merge pull request #24268 from hashicorp/cgriggs01-stable-oktaasa
->adfe8d1e0 Merge pull request #20260 from nlamirault/patch-1
->652774430 Update CHANGELOG.md
->173530d89 (tag: v0.12.21) v0.12.21
->266ba3a0a Update CHANGELOG.md
->8fd9d7696 [Website] Adding community providers
->7c082b034 website: add token setup callout to remote backend docs (#24109)
->1b6ca2884 add Baidu links + okta
->1025b285a website: Private registry is free now
->477203f01 Update CHANGELOG.md
->b6d767a5c terraform: Add test coverage for eval_for_each
->257099324 terraform: detect null values in for_each sets
->00b9f2291 command/login: Fix browser launcher for WSL users
->049f7bf95 Update CHANGELOG.md
->c5f181ccf command: Fix stale lock when exiting early
->8c19ed71c Update CHANGELOG.md
->9f5d3832f Update CHANGELOG.md
->15420a759 Update CHANGELOG.md
->5a503e292 backend/cos: Add TencentCloud backend cos with lock (#22540)
->fb7def460 Update CHANGELOG.md
->86155e1c1 command/workspace delete: release lock after workspace removal warning (#24085)
->e4809d6d8 Update CHANGELOG.md
+Для ip 64.233.162.139 привязано имя `li-in-f139.1e100.net.`
 
-# 5. Найдите коммит в котором была создана функция func providerSource, ее определение в коде выглядит так func providerSource(...) (вместо троеточего перечислены аргументы).
+	vagrant@vagrant:~$ dig -x 64.233.162.139
+	
+	; <<>> DiG 9.16.1-Ubuntu <<>> -x 64.233.162.139
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 44003
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 65494
+	;; QUESTION SECTION:
+	;139.162.233.64.in-addr.arpa.   IN      PTR
+	
+	;; ANSWER SECTION:
+	139.162.233.64.in-addr.arpa. 12690 IN   PTR     li-in-f139.1e100.net.
+	
+	;; Query time: 24 msec
+	;; SERVER: 127.0.0.53#53(127.0.0.53)
+	;; WHEN: Tue Feb 08 14:18:50 UTC 2022
+	;; MSG SIZE  rcvd: 90
+	
+	vagrant@vagrant:~$
 
-## 5e06e39fcc86bb622b962c87da84213d3331ddf8
-## git log -SproviderSource --oneline
-## git show 5e06e39fc
+Для ip 64.233.162.101 привязано имя `li-in-f101.1e100.net.`
 
->git log -SproviderSource --oneline
->5b266dd5c command: Remove the experimental "terraform add" command
->c587384df cli: Restore -lock and -lock-timeout init flags
->583859e51 commands: `terraform add` (#28874)
->5f30efe85 command tests: plan and init (#28616)
->c89004d22 core: Add sensitive provider attrs to JSON plan
->31a5aa187 command/init: Add a new flag `-lockfile=readonly` (#27630)
->bab497912 command/init: Remove the warnings about the "legacy" cache directory
->e70ab09bf command: new cache directory .terraform/providers for providers
->b3f5c7f1e command/init: Read, respect, and update provider dependency locks
->0b734a280 command: Make provider installation interruptible
->9f824c53a command: Better in-house provider install errors
->d8e996436 terraform: Eval module call arguments for import
->87d1fb400 command/init: Display provider validation errors
->6b3d0ee64 add test for terraform version
->dbe139e61 add test for terraform version -json
->b611bd720 reproduction test
->8b279b6f3 plugin/discovery: Remove dead code
->ca4010706 command/init: Better diagnostics for provider 404s
->62d826e06 command/init: Use full config for provider reqs
->ae98bd12a command: Rework 0.13upgrade sub-command
->5af1e6234 main: Honor explicit provider_installation CLI config when present
->269d51148 command/providers: refactor with new provider types and functions
->8c928e835 main: Consult local directories as potential mirrors of providers
->958ea4f7d internal/providercache: Handle built-in providers
->de6c9ccec command/init: Move "vendored provider" test to e2etests
->0af09b23c command: apply and most of import tests passing
->add7006de command: Fix TestInit_pluginDirProviders and _pluginDirProvidersDoesNotGet
->d40085f37 command: Make the tests compile again
->3b0b29ef5 command: Add scaffold for 0.13upgrade command
->18dd1bb4d Mildwonkey/tfconfig upgrade (#23670)
->5e06e39fc Use registry alias to fetch providers
->
->git show 5e06e39fc
->commit 5e06e39fcc86bb622b962c87da84213d3331ddf8
->Author: findkim <kngo@hashicorp.com>
->Date:   Wed Nov 28 10:26:16 2018 -0600
->
->    Use registry alias to fetch providers
->
->diff --git a/plugin/discovery/get.go b/plugin/discovery/get.go
->index 2f6ac1a91..751844e17 100644
->--- a/plugin/discovery/get.go
->+++ b/plugin/discovery/get.go
->@@ -134,6 +134,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->        if len(allVersions.Versions) == 0 {
->                return PluginMeta{}, ErrorNoSuitableVersion
->        }
->+       providerSource := allVersions.ID
->
->        // Filter the list of plugin versions to those which meet the version constraints
->        versions := allowedVersions(allVersions, req)
->@@ -175,7 +176,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                return PluginMeta{}, ErrorNoVersionCompatibleWithPlatform
->        }
->
->-       downloadURLs, err := i.listProviderDownloadURLs(provider, versionMeta.Version)
->+       downloadURLs, err := i.listProviderDownloadURLs(providerSource, versionMeta.Version)
->        providerURL := downloadURLs.DownloadURL
->
->        i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", provider, versionMeta.Version))
->@@ -193,6 +194,9 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                }
->        }
->
->+       printedProviderName := fmt.Sprintf("%s (%s)", provider, providerSource)
->+       i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", printedProviderName, versionMeta.Version))
->+       log.Printf("[DEBUG] getting provider %q version %q", printedProviderName, versionMeta.Version)
->        err = i.install(provider, v, providerURL)
->        if err != nil {
->                return PluginMeta{}, err
->diff --git a/plugin/discovery/get_test.go b/plugin/discovery/get_test.go
->index 534a01fa5..73e8bdd18 100644
->--- a/plugin/discovery/get_test.go
->+++ b/plugin/discovery/get_test.go
->@@ -130,6 +130,7 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
->
-> func testReleaseServer() *httptest.Server {
->        handler := http.NewServeMux()
->+       handler.HandleFunc("/v1/providers/-/", testHandler)
->        handler.HandleFunc("/v1/providers/terraform-providers/", testHandler)
->        handler.HandleFunc("/terraform-provider-template/", testChecksumHandler)
->        handler.HandleFunc("/terraform-provider-badsig/", testChecksumHandler)
->:
->
+	vagrant@vagrant:~$ dig -x 64.233.162.101
+	
+	; <<>> DiG 9.16.1-Ubuntu <<>> -x 64.233.162.101
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 50793
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 65494
+	;; QUESTION SECTION:
+	;101.162.233.64.in-addr.arpa.   IN      PTR
+	
+	;; ANSWER SECTION:
+	101.162.233.64.in-addr.arpa. 10867 IN   PTR     li-in-f101.1e100.net.
+	
+	;; Query time: 16 msec
+	;; SERVER: 127.0.0.53#53(127.0.0.53)
+	;; WHEN: Tue Feb 08 14:19:18 UTC 2022
+	;; MSG SIZE  rcvd: 90
+	
+	vagrant@vagrant:~$
 
+Для ip 64.233.162.102 привязано имя `li-in-f102.1e100.net.`
 
-# 6. Найдите все коммиты в которых была изменена функция globalPluginDirs.
+	vagrant@vagrant:~$ dig -x 64.233.162.102
+	
+	; <<>> DiG 9.16.1-Ubuntu <<>> -x 64.233.162.102
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9213
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 65494
+	;; QUESTION SECTION:
+	;102.162.233.64.in-addr.arpa.   IN      PTR
+	
+	;; ANSWER SECTION:
+	102.162.233.64.in-addr.arpa. 6955 IN    PTR     li-in-f102.1e100.net.
+	
+	;; Query time: 0 msec
+	;; SERVER: 127.0.0.53#53(127.0.0.53)
+	;; WHEN: Tue Feb 08 14:24:18 UTC 2022
+	;; MSG SIZE  rcvd: 90
+	
+	vagrant@vagrant:~$
 
-## git log -SglobalPluginDirs --oneline
->35a058fb3 main: configure credentials from the CLI config file
->c0b176109 prevent log output during init
->8364383c3 Push plugin discovery down into command package
+Для ip 64.233.162.138 привязано имя `li-in-f138.1e100.net.`
 
-
-# 7. Кто автор функции synchronizedWriters?
-
-## Author: Martin Atkins <mart@degeneration.co.uk>
-## git log -SsynchronizedWriters --oneline
->bdfea50cc remove unused
->fd4f7eb0b remove prefixed io
->5ac311e2a main: synchronize writes to VT100-faker on Windows
-
-##  git show 5ac311e2a
->commit 5ac311e2a91e381e2f52234668b49ba670aa0fe5
->Author: Martin Atkins <mart@degeneration.co.uk>
->Date:   Wed May 3 16:25:41 2017 -0700
->...
+	vagrant@vagrant:~$ dig -x 64.233.162.138
+	
+	; <<>> DiG 9.16.1-Ubuntu <<>> -x 64.233.162.138
+	;; global options: +cmd
+	;; Got answer:
+	;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 37896
+	;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+	
+	;; OPT PSEUDOSECTION:
+	; EDNS: version: 0, flags:; udp: 65494
+	;; QUESTION SECTION:
+	;138.162.233.64.in-addr.arpa.   IN      PTR
+	
+	;; ANSWER SECTION:
+	138.162.233.64.in-addr.arpa. 5983 IN    PTR     li-in-f138.1e100.net.
+	
+	;; Query time: 20 msec
+	;; SERVER: 127.0.0.53#53(127.0.0.53)
+	;; WHEN: Tue Feb 08 14:25:24 UTC 2022
+	;; MSG SIZE  rcvd: 90
+	
+	vagrant@vagrant:~$
+	
