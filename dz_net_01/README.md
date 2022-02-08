@@ -86,13 +86,13 @@
 
 приложите скриншот консоли браузера в ответ.
 
-(img/dz_net_01-2-long.jpg)
+![dz_net_01-2-long](img/dz_net_01-2-long.jpg)
 
 ### 3. Какой IP адрес у вас в интернете?
 
 94.50.223.169
  
-(img/dz_net_01-3-my_ip.jpg)
+![dz_net_01-3-my_ip](img/dz_net_01-3-my_ip.jpg)
 
 ### 4. Какому провайдеру принадлежит ваш IP адрес? Какой автономной системе AS? Воспользуйтесь утилитой `whois`
 
@@ -240,7 +240,7 @@
 
 	vagrant@vagrant:~$ mtr 8.8.8.8
 
-(img/dz_net_01-8-mtr.jpg)	
+![dz_net_01-8-mtr](img/dz_net_01-8-mtr.jpg)	
 	
 На участке 8	
 	
