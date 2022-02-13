@@ -107,7 +107,7 @@
 		valid_lft forever preferred_lft forever
 	vagrant@vagrant:~$
 
---### 2. Какой протокол используется для распознавания соседа по сетевому интерфейсу? Какой пакет и команды есть в Linux для этого?
+### 2. Какой протокол используется для распознавания соседа по сетевому интерфейсу? Какой пакет и команды есть в Linux для этого?
 
 vagrant@vagrant:~$ sudo -i
 root@vagrant:~# apt-get update
@@ -395,3 +395,5 @@ Linux
 	_gateway                 ether   52:54:00:12:35:02   C                     eth0
 	_gateway                 ether   52:54:00:12:35:02   C                     eth0
 	vagrant@vagrant:~$
+	
+	
