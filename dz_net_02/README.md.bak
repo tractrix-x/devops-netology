@@ -109,28 +109,26 @@
 
 ### 2. Какой протокол используется для распознавания соседа по сетевому интерфейсу? Какой пакет и команды есть в Linux для этого?
 
-vagrant@vagrant:~$ sudo -i
-root@vagrant:~# apt-get update
-root@vagrant:~# apt-get install lldpd
-
-vagrant@vagrant:~$ lldpctl
--------------------------------------------------------------------------------
-LLDP neighbors:
--------------------------------------------------------------------------------
-vagrant@vagrant:
-
+	vagrant@vagrant:~$ sudo -i
+	root@vagrant:~# apt-get update
+	root@vagrant:~# apt-get install lldpd
+	
+	vagrant@vagrant:~$ lldpctl
+	-------------------------------------------------------------------------------
+	LLDP neighbors:
+	-------------------------------------------------------------------------------
+	vagrant@vagrant:
+	
 `https://deminov.net/enable-lldp-on-the-linux-server/`
-
-root@vagrant:~# systemctl enable lldpd
-Synchronizing state of lldpd.service with SysV service script with /lib/systemd/systemd-sysv-install.
-Executing: /lib/systemd/systemd-sysv-install enable lldpd
-root@vagrant:~# service lldpd start
-root@vagrant:~# echo "# enable agentx for lldp
-> master agentx" >> /etc/snmp/snmpd.conf
-root@vagrant:~# echo 'DAEMON_ARGS="-x -c -s -e"' >> /etc/default/lldpd
-root@vagrant:~# service lldpd restart
-
-
+	
+	root@vagrant:~# systemctl enable lldpd
+	Synchronizing state of lldpd.service with SysV service script with /lib/systemd/systemd-sysv-install.
+	Executing: /lib/systemd/systemd-sysv-install enable lldpd
+	root@vagrant:~# service lldpd start
+	root@vagrant:~# echo "# enable agentx for lldp
+	> master agentx" >> /etc/snmp/snmpd.conf
+	root@vagrant:~# echo 'DAEMON_ARGS="-x -c -s -e"' >> /etc/default/lldpd
+	root@vagrant:~# service lldpd restart
 
 
 ### 3. Какая технология используется для разделения L2 коммутатора на несколько виртуальных сетей? Какой пакет и команды есть в Linux для этого? Приведите пример конфига.
@@ -159,7 +157,8 @@ root@vagrant:~# service lldpd restart
 	Processing triggers for man-db (2.9.1-1) ...
 	root@vagrant:~#
 
- `https://lumpics.ru/configure-network-in-ubuntu/`
+`https://lumpics.ru/configure-network-in-ubuntu/`
+	
 	vagrant@vagrant:~$ sudo lshw -C network
 	*-network
 		description: Ethernet interface
@@ -186,7 +185,6 @@ root@vagrant:~# service lldpd restart
 	Warning: vconfig is deprecated and might be removed in the future, please migrate to ip(route2) as soon as possible!
 	
 	vagrant@vagrant:~$
-
 	vagrant@vagrant:~$ sudo ip addr add 10.0.0.9/24 dev eth0.9
 	vagrant@vagrant:~$ sudo ip link set up eth0.9
 	vagrant@vagrant:~$ ip a
@@ -237,6 +235,7 @@ mode=6 (balance-alb)
 Адаптивная балансировка нагрузки (более совершенная). Обеспечивает балансировку нагрузки как исходящего (TLB, transmit load balancing), так и входящего трафика (для IPv4 через ARP). Не требует специальной поддержки коммутатором, но требует возможности изменять MAC-адрес устройства.
 
 Файлы конфигурации сети для Ubuntu
+	
 	vagrant@vagrant:~$ cat /etc/netplan/01-netcfg.yaml
 	network:
 	version: 2
@@ -339,6 +338,7 @@ mode=6 (balance-alb)
 ### 7. Как проверить ARP таблицу в Linux, Windows? Как очистить ARP кеш полностью? Как из ARP таблицы удалить только один нужный IP?
 
 Windows
+
 	PS C:\Users\Irina> arp -a
 	
 	Интерфейс: 192.168.56.1 --- 0x6
@@ -369,12 +369,15 @@ Windows
 	224.0.0.251           01-00-5e-00-00-fb     статический
 	239.255.255.250       01-00-5e-7f-ff-fa     статический
 	PS C:\Users\Irina>
+	
 Оочистить ARP кэш `netsh interface ip delete arpcache`
 
 Linux
+
 	sudo apt install net-tools
 
 Список таблиц
+
 	vagrant@vagrant:~$ arp
 	Address                  HWtype  HWaddress           Flags Mask            Iface
 	10.0.2.3                 ether   52:54:00:12:35:03   C                     eth0
@@ -382,6 +385,7 @@ Linux
 	vagrant@vagrant:~$
 
 Удалить один адрес из таблицы
+
 	vagrant@vagrant:~$ sudo arp -d 10.0.2.3
 	vagrant@vagrant:~$ arp
 	Address                  HWtype  HWaddress           Flags Mask            Iface
@@ -389,6 +393,7 @@ Linux
 	_gateway                 ether   52:54:00:12:35:02   C                     eth0
 
 Удалить все записи
+
 	vagrant@vagrant:~$ sudo ip neigh flush all
 	vagrant@vagrant:~$ arp
 	Address                  HWtype  HWaddress           Flags Mask            Iface
