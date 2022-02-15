@@ -223,17 +223,17 @@ sudo ip addr add 83.149.37.54/24 dev dummy0
 -u отображают UDP порты
 -n показывает ip адреса в числовом виде.
 
-vagrant@vagrant:~$ netstat -pnlt
-(Not all processes could be identified, non-owned process info
- will not be shown, you would have to be root to see it all.)
-Active Internet connections (only servers)
-Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
-tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      -
-tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
-tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
-tcp6       0      0 :::111                  :::*                    LISTEN      -
-tcp6       0      0 :::22                   :::*                    LISTEN      -
-vagrant@vagrant:~$
+	vagrant@vagrant:~$ netstat -pnlt
+	(Not all processes could be identified, non-owned process info
+	will not be shown, you would have to be root to see it all.)
+	Active Internet connections (only servers)
+	Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+	tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      -
+	tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
+	tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+	tcp6       0      0 :::111                  :::*                    LISTEN      -
+	tcp6       0      0 :::22                   :::*                    LISTEN      -
+	vagrant@vagrant:~$
 
 `ss -ltpn` со значениями портов
 
@@ -282,5 +282,5 @@ vagrant@vagrant:~$
 
 ### 5. Используя diagrams.net, создайте L3 диаграмму вашей домашней сети или любой другой сети, с которой вы работали.
 
-(img/dz_net_03-home_netvork.png)
+ (img/dz_net_03-home_netvork.png)
 
