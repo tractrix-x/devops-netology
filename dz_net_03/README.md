@@ -282,5 +282,5 @@ sudo ip addr add 83.149.37.54/24 dev dummy0
 
 ### 5. Используя diagrams.net, создайте L3 диаграмму вашей домашней сети или любой другой сети, с которой вы работали.
 
- (dz_net_03/img/home_netvork.png)
+ (img/home_netvork.png)
 
