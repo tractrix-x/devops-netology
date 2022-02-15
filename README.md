@@ -1,273 +1,286 @@
-# devops-netology
-# Для выполнения заданий в этом разделе давайте склонируем репозиторий с исходным кодом терраформа https://github.com/hashicorp/terraform
-# В виде результата напишите текстом ответы на вопросы и каким образом эти ответы были получены.
+# Домашнее задание к занятию "3.8. Компьютерные сети, лекция 3"
 
-# 1. Найдите полный хеш и комментарий коммита, хеш которого начинается на aefea.
-## $ git show aefea
-## aefead2207ef7e2aa5dc81a34aedf0cad4c32545
+### 1. Подключитесь к публичному маршрутизатору в интернет. Найдите маршрут к вашему публичному IP
+	
+	telnet route-views.routeviews.org
+	Username: rviews
+	show ip route x.x.x.x/32
+	show bgp x.x.x.x/32
 
->commit aefead2207ef7e2aa5dc81a34aedf0cad4c32545
->Author: Alisdair McDiarmid <alisdair@users.noreply.github.com>
->$ git show aefea
->Date:   Thu Jun 18 10:29:58 2020 -0400
->
->    Update CHANGELOG.md
->
->diff --git a/CHANGELOG.md b/CHANGELOG.md
->index 86d70e3e0..588d807b1 100644
->--- a/CHANGELOG.md
->+++ b/CHANGELOG.md
->@@ -27,6 +27,7 @@ BUG FIXES:
-> * backend/s3: Prefer AWS shared configuration over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Prefer ECS credentials over EC2 metadata credentials by default ([#25134](https://github.com/hashicorp/terraform/issues/25134))
-> * backend/s3: Remove hardcoded AWS Provider messaging ([#25134](https://github.com/hashicorp/terraform/issues/25134))
->+* command: Fix bug with global `-v`/`-version`/`--version` flags introduced in 0.13.0beta2 [GH-25277]
-> * command/0.13upgrade: Fix `0.13upgrade` usage help text to include options ([#25127](https://github.com/hashicorp/terraform/issues/25127))
-> * command/0.13upgrade: Do not add source for builtin provider ([#25215](https://github.com/hashicorp/terraform/issues/25215))
-> * command/apply: Fix bug which caused Terraform to silently exit on Windows when using absolute plan path ([#25233](https://github.com/hashicorp/terraform/issues/25233))
+Выведем содержимое таблицы маршрутизации
 
+	route-views>show ip route 178.47.119.88
+	Routing entry for 178.47.96.0/19
+	Known via "bgp 6447", distance 20, metric 0
+	Tag 2497, type external
+	Last update from 202.232.0.2 5d10h ago
+	Routing Descriptor Blocks:
+	* 202.232.0.2, from 202.232.0.2, 5d10h ago
+		Route metric is 0, traffic share count is 1
+		AS Hops 2
+		Route tag 2497
+		MPLS label: none
+	route-views>
 
+Записи в таблице маршрутизации протокола пограничного шлюза (BGP) 	
 
-# 2. Какому тегу соответствует коммит 85024d3?
+	route-views>show bgp 178.47.119.88
+	BGP routing table entry for 178.47.96.0/19, version 302094790
+	Paths: (23 available, best #17, table default)
+	Not advertised to any peer
+	Refresh Epoch 1
+	701 1273 12389
+		137.39.3.55 from 137.39.3.55 (137.39.3.55)
+		Origin IGP, localpref 100, valid, external
+		path 7FE0E0790FA8 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	3549 3356 12389
+		208.51.134.254 from 208.51.134.254 (67.16.168.191)
+		Origin IGP, metric 0, localpref 100, valid, external
+		Community: 3356:2 3356:22 3356:100 3356:123 3356:501 3356:901 3356:2065 3549:2581 3549:30840
+		path 7FE0461AD5A8 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	53767 14315 6453 6453 3356 12389
+		162.251.163.2 from 162.251.163.2 (162.251.162.3)
+		Origin IGP, localpref 100, valid, external
+		Community: 14315:5000 53767:5000
+		path 7FE0F0EAD968 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	3356 12389
+		4.68.4.46 from 4.68.4.46 (4.69.184.201)
+		Origin IGP, metric 0, localpref 100, valid, external
+		Community: 3356:2 3356:22 3356:100 3356:123 3356:501 3356:901 3356:2065
+		path 7FE18A7FD748 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	8283 1299 12389
+		94.142.247.3 from 94.142.247.3 (94.142.247.3)
+		Origin IGP, metric 0, localpref 100, valid, external
+		Community: 1299:30000 8283:1 8283:101 8283:103
+		unknown transitive attribute: flag 0xE0 type 0x20 length 0x24
+			value 0000 205B 0000 0000 0000 0001 0000 205B
+				0000 0005 0000 0001 0000 205B 0000 0005
+				0000 0003
+		path 7FE0AE2E1838 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	4901 6079 1299 12389
+		162.250.137.254 from 162.250.137.254 (162.250.137.254)
+		Origin IGP, localpref 100, valid, external
+		Community: 65000:10100 65000:10300 65000:10400
+		path 7FE04E4D5DC0 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	57866 3356 12389
+		37.139.139.17 from 37.139.139.17 (37.139.139.17)
+		Origin IGP, metric 0, localpref 100, valid, external
+		Community: 3356:2 3356:22 3356:100 3356:123 3356:501 3356:901 3356:2065
+		path 7FE151898898 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	852 3491 12389
+		154.11.12.212 from 154.11.12.212 (96.1.209.43)
+		Origin IGP, metric 0, localpref 100, valid, external
+		path 7FE0848FBB48 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	20912 3257 174 12389
+		212.66.96.126 from 212.66.96.126 (212.66.96.126)
+		Origin IGP, localpref 100, valid, external
+		Community: 3257:8070 3257:30155 3257:50001 3257:53900 3257:53902 20912:65004
+		path 7FE087CF6870 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	3303 12389
+		217.192.89.50 from 217.192.89.50 (138.187.128.158)
+		Origin IGP, localpref 100, valid, external
+		Community: 3303:1004 3303:1006 3303:1030 3303:3056
+		path 7FE10A333208 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	101 3491 12389
+		209.124.176.223 from 209.124.176.223 (209.124.176.223)
+		Origin IGP, localpref 100, valid, external
+		Community: 101:20300 101:22100 3491:400 3491:415 3491:9001 3491:9080 3491:9081 3491:9087 3491:62210 3491:62220
+		path 7FE0D4029C40 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	3333 1103 12389
+		193.0.0.56 from 193.0.0.56 (193.0.0.56)
+		Origin IGP, localpref 100, valid, external
+		path 7FE1702ADFE8 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	7018 1299 12389
+		12.0.1.63 from 12.0.1.63 (12.0.1.63)
+		Origin IGP, localpref 100, valid, external
+		Community: 7018:5000 7018:37232
+		path 7FE15ED6AEF0 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	3561 3910 3356 12389
+		206.24.210.80 from 206.24.210.80 (206.24.210.80)
+		Origin IGP, localpref 100, valid, external
+		path 7FE15F038DE8 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	1351 6939 12389
+		132.198.255.253 from 132.198.255.253 (132.198.255.253)
+		Origin IGP, localpref 100, valid, external
+		path 7FE128DD40F0 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	20130 6939 12389
+		140.192.8.16 from 140.192.8.16 (140.192.8.16)
+		Origin IGP, localpref 100, valid, external
+		path 7FE0FD985DE8 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 2
+	2497 12389
+		202.232.0.2 from 202.232.0.2 (58.138.96.254)
+		Origin IGP, localpref 100, valid, external, best
+		path 7FE169383330 RPKI State valid
+		rx pathid: 0, tx pathid: 0x0
+	Refresh Epoch 1
+	7660 2516 12389
+		203.181.248.168 from 203.181.248.168 (203.181.248.168)
+		Origin IGP, localpref 100, valid, external
+		Community: 2516:1050 7660:9001
+		path 7FE0AD1CA0C0 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	49788 12552 12389
+		91.218.184.60 from 91.218.184.60 (91.218.184.60)
+		Origin IGP, localpref 100, valid, external
+		Community: 12552:12000 12552:12100 12552:12101 12552:22000
+		Extended Community: 0x43:100:1
+		path 7FE10413BBA0 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	1221 4637 12389
+		203.62.252.83 from 203.62.252.83 (203.62.252.83)
+		Origin IGP, localpref 100, valid, external
+		path 7FE0DFAE8A98 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	3257 1299 12389
+		89.149.178.10 from 89.149.178.10 (213.200.83.26)
+		Origin IGP, metric 10, localpref 100, valid, external
+		Community: 3257:8794 3257:30052 3257:50001 3257:54900 3257:54901
+		path 7FE11E45FC10 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	6939 12389
+		64.71.137.241 from 64.71.137.241 (216.218.252.164)
+		Origin IGP, localpref 100, valid, external
+		path 7FE188E419C8 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+	Refresh Epoch 1
+	19214 174 12389
+		208.74.64.40 from 208.74.64.40 (208.74.64.40)
+		Origin IGP, localpref 100, valid, external
+		Community: 174:21101 174:22005
+		path 7FE0D048B938 RPKI State valid
+		rx pathid: 0, tx pathid: 0
+		
 
-## git show 85024d3
-## tag: v0.12.23
+### 2. Создайте dummy0 интерфейс в Ubuntu. Добавьте несколько статических маршрутов. Проверьте таблицу маршрутизации.
 
-# 3. Сколько родителей у коммита b8d720? Напишите их хеши.
-## у коммита b8d720 - 2 родителя 56cd7859e05c36c06b56d013b55a252d0bb7e158 и 9ea88f22fc6269854151c571162c5bcf958bee2b
+`https://ixnfo.com/sozdanie-dummy-interfeysov-v-linux.html`
 
->git show b8d720^
->commit 56cd7859e05c36c06b56d013b55a252d0bb7e158
->Merge: 58dcac4b7 ffbcf5581
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Mon Jan 13 13:19:09 2020 -0800
->
->    Merge pull request #23857 from hashicorp/cgriggs01-stable
->
->    [cherry-pick]add checkpoint links
->
->git show b8d720^2
->commit 9ea88f22fc6269854151c571162c5bcf958bee2b
->Author: Chris Griggs <cgriggs@hashicorp.com>
->Date:   Tue Jan 21 17:08:06 2020 -0800
->
->    add/update community provider listings
->
->diff --git a/website/docs/providers/type/community-index.html.markdown b/website/docs/providers/type/community-index.html.markdown
->index 6119f048f..675059dd4 100644
->--- a/website/docs/providers/type/community-index.html.markdown
->+++ b/website/docs/providers/type/community-index.html.markdown
->@@ -28,19 +28,23 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Apigee](https://github.com/zambien/terraform-provider-apigee)
-> - [Artifactory](https://github.com/atlassian/terraform-provider-artifactory)
-> - [Auth](https://github.com/Shuttl-Tech/terraform-provider-auth)
->-- [Auth0](https://github.com/bocodigitalmedia/terraform-provider-auth0)
->+- [Auth0](https://github.com/alexkappa/terraform-provider-auth0)
-> - [Automic Continuous Delivery](https://github.com/Automic/terraform-provider-cda)
-> - [AVI](https://github.com/avinetworks/terraform-provider-avi)
-> - [Aviatrix](https://github.com/AviatrixSystems/terraform-provider-aviatrix)
-> - [AWX](https://github.com/mauromedda/terraform-provider-awx)
-> - [Azure Devops](https://github.com/agarciamiravet/terraform-provider-azuredevops)
-> - [Bitbucket Server](https://github.com/gavinbunney/terraform-provider-bitbucketserver)
->+- [CDS](https://github.com/capitalonline/terraform-provider-cds)
-> - [Centreon](https://github.com/smutel/terraform-provider-centreon)
-> - [Checkly](https://github.com/bitfield/terraform-provider-checkly)
-> - [Cherry Servers](https://github.com/cherryservers/terraform-provider-cherryservers)
-> - [Citrix ADC](https://github.com/citrix/terraform-provider-citrixadc)
-> - [Cloud Foundry](https://github.com/cloudfoundry-community/terraform-provider-cf)
->+- [Cloud.dk](https://github.com/danitso/terraform-provider-clouddk)
->+- [Cloudability](https://github.com/skyscrapr/terraform-provider-cloudability)
-> - [CloudAMQP](https://github.com/cloudamqp/terraform-provider)
->+- [Cloudforms](https://github.com/GSLabDev/terraform-provider-cloudforms)
-> - [CloudKarafka](https://github.com/cloudkarafka/terraform-provider)
-> - [CloudMQTT](https://github.com/cloudmqtt/terraform-provider)
-> - [CloudPassage Halo](https://gitlab.com/kiwicom/terraform-provider-cphalo)
->@@ -78,6 +82,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [Google Calendar](https://github.com/sethvargo/terraform-provider-googlecalendar)
-> - [Google G Suite](https://github.com/DeviaVir/terraform-provider-gsuite)
-> - [GorillaStack](https://github.com/GorillaStack/terraform-provider-gorillastack)
->+- [Greylog](https://github.com/suzuki-shunsuke/go-graylog)
->+- [Harbor](https://github.com/BESTSELLER/terraform-harbor-provider)
-> - [Hiera](https://github.com/ribbybibby/terraform-provider-hiera)
-> - [HPE OneView](https://github.com/HewlettPackard/terraform-provider-oneview)
-> - [HTTP File Upload](https://github.com/GSLabDev/terraform-provider-httpfileupload)
->@@ -85,6 +91,8 @@ please fill out this [community providers form](https://docs.google.com/forms/d/
-> - [IIJ GIO](https://github.com/iij/terraform-provider-p2pub)
-> - [Infoblox](https://github.com/hiscox/terraform-provider-infoblox)
-> - [InsightOPS](https://github.com/Tweddle-SE-Team/terraform-provider-insight)
->+- [Instana](https://github.com/gessnerfl/terraform-provider-instana)
->...
->
->bil@LAPTOP-GJ376PE7:/mnt/d/devops-netology/terraform/terraform$ git show b8d720^3
->fatal: ambiguous argument 'b8d720^3': unknown revision or path not in the working tree.
->Use '--' to separate paths from revisions, like this:
->'git <command> [<revision>...] -- [<file>...]'
+Загрузим модуль «dummy», добавим опцию «numdummies=2» чтобы сразу создалось два интерфейса dummyX
 
-# 4. Перечислите хеши и комментарии всех коммитов которые были сделаны между тегами v0.12.23 и v0.12.24.
-## git log --oneline v0.12.23  v0.12.24
+	sudo modprobe -v dummy numdummies=2
+	
+Проверим загрузку модуля
 
->git log --oneline v0.12.23  v0.12.24
->33ff1c03b (tag: v0.12.24) v0.12.24
->b14b74c49 [Website] vmc provider links
->3f235065b Update CHANGELOG.md
->6ae64e247 registry: Fix panic when server is unreachable
->5c619ca1b website: Remove links to the getting started guide's old location
->06275647e Update CHANGELOG.md
->d5f9411f5 command: Fix bug when using terraform login on Windows
->4b6d06cc5 Update CHANGELOG.md
->dd01a3507 Update CHANGELOG.md
->225466bc3 Cleanup after v0.12.23 release
->85024d310 (tag: v0.12.23) v0.12.23
->4703cb6c1 Update CHANGELOG.md
->0b4470e0d Cleanup after v0.12.22 release
->18bfd096b (tag: v0.12.22) v0.12.22
->c66cdcf78 backend/plan: Show warnings even without changes (backport) (#24172)
->566be7a3c Update CHANGELOG.md
->d7a9ebf55 Update CHANGELOG.md
->791ebcb8e state mv should always target instance each mode
->c32ff5ec5 Update CHANGELOG.md
->64f328c6a Update CHANGELOG.md
->2cdfa0851 registry: configurable client timeout (#24259)
->f2800851c Update CHANGELOG.md
->ca2facfd9 registry: fix env test cleanup
->c8b8bc3f6 registry: setup client logger
->8cbdddc21 website/docs/commands: document TF_REGISTRY_DISCOVERY_RETRY
->46ec259fa registry: configurable retry client
->eb07dccd0 Merge pull request #24176 from hashicorp/cgriggs01-stable-quorum
->0a32eab6c Merge pull request #24268 from hashicorp/cgriggs01-stable-oktaasa
->adfe8d1e0 Merge pull request #20260 from nlamirault/patch-1
->652774430 Update CHANGELOG.md
->173530d89 (tag: v0.12.21) v0.12.21
->266ba3a0a Update CHANGELOG.md
->8fd9d7696 [Website] Adding community providers
->7c082b034 website: add token setup callout to remote backend docs (#24109)
->1b6ca2884 add Baidu links + okta
->1025b285a website: Private registry is free now
->477203f01 Update CHANGELOG.md
->b6d767a5c terraform: Add test coverage for eval_for_each
->257099324 terraform: detect null values in for_each sets
->00b9f2291 command/login: Fix browser launcher for WSL users
->049f7bf95 Update CHANGELOG.md
->c5f181ccf command: Fix stale lock when exiting early
->8c19ed71c Update CHANGELOG.md
->9f5d3832f Update CHANGELOG.md
->15420a759 Update CHANGELOG.md
->5a503e292 backend/cos: Add TencentCloud backend cos with lock (#22540)
->fb7def460 Update CHANGELOG.md
->86155e1c1 command/workspace delete: release lock after workspace removal warning (#24085)
->e4809d6d8 Update CHANGELOG.md
+	vagrant@vagrant:~$ lsmod | grep dummy
+	dummy                  16384  0
+	vagrant@vagrant:~$
 
-# 5. Найдите коммит в котором была создана функция func providerSource, ее определение в коде выглядит так func providerSource(...) (вместо троеточего перечислены аргументы).
+Проверим создание интерфейсов
 
-## 5e06e39fcc86bb622b962c87da84213d3331ddf8
-## git log -SproviderSource --oneline
-## git show 5e06e39fc
+	vagrant@vagrant:~$ ifconfig -a | grep dummy
+	dummy0: flags=130<BROADCAST,NOARP>  mtu 1500
+	dummy1: flags=130<BROADCAST,NOARP>  mtu 1500
+	vagrant@vagrant:~$
 
->git log -SproviderSource --oneline
->5b266dd5c command: Remove the experimental "terraform add" command
->c587384df cli: Restore -lock and -lock-timeout init flags
->583859e51 commands: `terraform add` (#28874)
->5f30efe85 command tests: plan and init (#28616)
->c89004d22 core: Add sensitive provider attrs to JSON plan
->31a5aa187 command/init: Add a new flag `-lockfile=readonly` (#27630)
->bab497912 command/init: Remove the warnings about the "legacy" cache directory
->e70ab09bf command: new cache directory .terraform/providers for providers
->b3f5c7f1e command/init: Read, respect, and update provider dependency locks
->0b734a280 command: Make provider installation interruptible
->9f824c53a command: Better in-house provider install errors
->d8e996436 terraform: Eval module call arguments for import
->87d1fb400 command/init: Display provider validation errors
->6b3d0ee64 add test for terraform version
->dbe139e61 add test for terraform version -json
->b611bd720 reproduction test
->8b279b6f3 plugin/discovery: Remove dead code
->ca4010706 command/init: Better diagnostics for provider 404s
->62d826e06 command/init: Use full config for provider reqs
->ae98bd12a command: Rework 0.13upgrade sub-command
->5af1e6234 main: Honor explicit provider_installation CLI config when present
->269d51148 command/providers: refactor with new provider types and functions
->8c928e835 main: Consult local directories as potential mirrors of providers
->958ea4f7d internal/providercache: Handle built-in providers
->de6c9ccec command/init: Move "vendored provider" test to e2etests
->0af09b23c command: apply and most of import tests passing
->add7006de command: Fix TestInit_pluginDirProviders and _pluginDirProvidersDoesNotGet
->d40085f37 command: Make the tests compile again
->3b0b29ef5 command: Add scaffold for 0.13upgrade command
->18dd1bb4d Mildwonkey/tfconfig upgrade (#23670)
->5e06e39fc Use registry alias to fetch providers
->
->git show 5e06e39fc
->commit 5e06e39fcc86bb622b962c87da84213d3331ddf8
->Author: findkim <kngo@hashicorp.com>
->Date:   Wed Nov 28 10:26:16 2018 -0600
->
->    Use registry alias to fetch providers
->
->diff --git a/plugin/discovery/get.go b/plugin/discovery/get.go
->index 2f6ac1a91..751844e17 100644
->--- a/plugin/discovery/get.go
->+++ b/plugin/discovery/get.go
->@@ -134,6 +134,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->        if len(allVersions.Versions) == 0 {
->                return PluginMeta{}, ErrorNoSuitableVersion
->        }
->+       providerSource := allVersions.ID
->
->        // Filter the list of plugin versions to those which meet the version constraints
->        versions := allowedVersions(allVersions, req)
->@@ -175,7 +176,7 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                return PluginMeta{}, ErrorNoVersionCompatibleWithPlatform
->        }
->
->-       downloadURLs, err := i.listProviderDownloadURLs(provider, versionMeta.Version)
->+       downloadURLs, err := i.listProviderDownloadURLs(providerSource, versionMeta.Version)
->        providerURL := downloadURLs.DownloadURL
->
->        i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", provider, versionMeta.Version))
->@@ -193,6 +194,9 @@ func (i *ProviderInstaller) Get(provider string, req Constraints) (PluginMeta, e
->                }
->        }
->
->+       printedProviderName := fmt.Sprintf("%s (%s)", provider, providerSource)
->+       i.Ui.Info(fmt.Sprintf("- Downloading plugin for provider %q (%s)...", printedProviderName, versionMeta.Version))
->+       log.Printf("[DEBUG] getting provider %q version %q", printedProviderName, versionMeta.Version)
->        err = i.install(provider, v, providerURL)
->        if err != nil {
->                return PluginMeta{}, err
->diff --git a/plugin/discovery/get_test.go b/plugin/discovery/get_test.go
->index 534a01fa5..73e8bdd18 100644
->--- a/plugin/discovery/get_test.go
->+++ b/plugin/discovery/get_test.go
->@@ -130,6 +130,7 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
->
-> func testReleaseServer() *httptest.Server {
->        handler := http.NewServeMux()
->+       handler.HandleFunc("/v1/providers/-/", testHandler)
->        handler.HandleFunc("/v1/providers/terraform-providers/", testHandler)
->        handler.HandleFunc("/terraform-provider-template/", testChecksumHandler)
->        handler.HandleFunc("/terraform-provider-badsig/", testChecksumHandler)
->:
->
+Добавим IP адрес с интерфейса dummy0 
 
+sudo ip addr add 178.47.119.88/24 dev dummy0
+sudo ip addr add 83.149.37.54/24 dev dummy0
 
-# 6. Найдите все коммиты в которых была изменена функция globalPluginDirs.
+### 3. Проверьте открытые TCP порты в Ubuntu, какие протоколы и приложения используют эти порты? Приведите несколько примеров.
 
-## git log -SglobalPluginDirs --oneline
->35a058fb3 main: configure credentials from the CLI config file
->c0b176109 prevent log output during init
->8364383c3 Push plugin discovery down into command package
+Проверить открытые TCP порты в Ubuntu можно `netstat -pnltu` или `ss -ltupn` c `https://losst.ru/otkrytye-porty-ubuntu`
+Опция 
+-l сообщает, что нужно посмотреть прослушиваемые порты, 
+-p  показывает имя программы, 
+-t отображают TCP 
+-u отображают UDP порты
+-n показывает ip адреса в числовом виде.
 
+	vagrant@vagrant:~$ netstat -pnlt
+	(Not all processes could be identified, non-owned process info
+	will not be shown, you would have to be root to see it all.)
+	Active Internet connections (only servers)
+	Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+	tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      -
+	tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
+	tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+	tcp6       0      0 :::111                  :::*                    LISTEN      -
+	tcp6       0      0 :::22                   :::*                    LISTEN      -
+	vagrant@vagrant:~$
 
-# 7. Кто автор функции synchronizedWriters?
+`ss -ltpn` со значениями портов
 
-## Author: Martin Atkins <mart@degeneration.co.uk>
-## git log -SsynchronizedWriters --oneline
->bdfea50cc remove unused
->fd4f7eb0b remove prefixed io
->5ac311e2a main: synchronize writes to VT100-faker on Windows
+	vagrant@vagrant:~$ ss -ltpn
+	State         Recv-Q        Send-Q               Local Address:Port               Peer Address:Port       Process
+	LISTEN        0             4096                       0.0.0.0:111                     0.0.0.0:*
+	LISTEN        0             4096                 127.0.0.53%lo:53                      0.0.0.0:*
+	LISTEN        0             128                        0.0.0.0:22                      0.0.0.0:*
+	LISTEN        0             4096                          [::]:111                        [::]:*
+	LISTEN        0             128                           [::]:22                         [::]:*
+	vagrant@vagrant:~$
 
-##  git show 5ac311e2a
->commit 5ac311e2a91e381e2f52234668b49ba670aa0fe5
->Author: Martin Atkins <mart@degeneration.co.uk>
->Date:   Wed May 3 16:25:41 2017 -0700
->...
+В данном случае это внутренние порты, нет приложений использующих их. Используемые протоколы `tcp`
+
+`Здесь в первом столбце отображается протокол, затем два столбца - это данные, которые нам ничего полезного не говорят, а за ними уже идут локальный и внешний адреса. Если локальный адрес - 127.0.0.1, то это значит, что сервис доступен только на этом компьютере, а значение 0.0.0.0 или :: означает любой адрес, к таким сервисам могут подключаться из сети. В нашем примере это Apache и systemd-resolvd.`
+
+### 4. Проверьте используемые UDP сокеты в Ubuntu, какие протоколы и приложения используют эти порты?
+
+Проверьте используемые UDP сокеты в Ubuntu. По `https://losst.ru/monitoring-setevyh-podklyuchenij-v-linux` команда `sudo ss -ua` 
+`Для отображения UDP сокетов используйте опцию u. По умолчанию будут показаны только подключенные соединения. Если хотите получить все, нужно использовать опцию a. Поскольку UDP, это протокол без постоянного соединения, то без опции -a мы ничего не увидим.`
+
+	vagrant@vagrant:~$ sudo ss -ua
+	State        Recv-Q       Send-Q               Local Address:Port                 Peer Address:Port       Process
+	UNCONN       0            0                    127.0.0.53%lo:domain                    0.0.0.0:*
+	UNCONN       0            0                   10.0.2.15%eth0:bootpc                    0.0.0.0:*
+	UNCONN       0            0                          0.0.0.0:sunrpc                    0.0.0.0:*
+	UNCONN       0            0                             [::]:sunrpc                       [::]:*
+	vagrant@vagrant:~$
+
+`ss -ltupn` со значениями портов
+
+	vagrant@vagrant:~$ ss -ltupn
+	Netid      State       Recv-Q      Send-Q            Local Address:Port             Peer Address:Port      Process
+	udp        UNCONN      0           0                 127.0.0.53%lo:53                    0.0.0.0:*
+	udp        UNCONN      0           0                10.0.2.15%eth0:68                    0.0.0.0:*
+	udp        UNCONN      0           0                       0.0.0.0:111                   0.0.0.0:*
+	udp        UNCONN      0           0                          [::]:111                      [::]:*
+	tcp        LISTEN      0           4096                    0.0.0.0:111                   0.0.0.0:*
+	tcp        LISTEN      0           4096              127.0.0.53%lo:53                    0.0.0.0:*
+	tcp        LISTEN      0           128                     0.0.0.0:22                    0.0.0.0:*
+	tcp        LISTEN      0           4096                       [::]:111                      [::]:*
+	tcp        LISTEN      0           128                        [::]:22                       [::]:*
+	vagrant@vagrant:~$
+
+Нет внешних приложений для этих портов.
+
+### 5. Используя diagrams.net, создайте L3 диаграмму вашей домашней сети или любой другой сети, с которой вы работали.
+
+ (dz_net_03/img/home_netvork.png)
+
