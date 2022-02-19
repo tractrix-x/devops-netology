@@ -208,10 +208,42 @@
 	dummy1: flags=130<BROADCAST,NOARP>  mtu 1500
 	vagrant@vagrant:~$
 
+Добавим маршрут с метрикой
+
+	root@vagrant:~# ip route add 172.16.10.0/24 dev eth0 metric 100
+	root@vagrant:~# ip route show
+	default via 10.0.2.2 dev eth0 proto dhcp src 10.0.2.15 metric 100
+	10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.15
+	10.0.2.2 dev eth0 proto dhcp scope link src 10.0.2.15 metric 100
+	172.16.10.0/24 dev eth0 scope link metric 100
+	root@vagrant:~#
+
 Добавим IP адрес с интерфейса dummy0 
 
-sudo ip addr add 178.47.119.88/24 dev dummy0
-sudo ip addr add 83.149.37.54/24 dev dummy0
+	root@vagrant:~# ip addr add 178.47.119.88/24 dev eth0
+	root@vagrant:~# ip addr add 83.149.37.54/24 dev eth0
+	
+Проверим 
+
+	root@vagrant:~# ip route show
+	default via 10.0.2.2 dev eth0 proto dhcp src 10.0.2.15 metric 100
+	10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.15
+	10.0.2.2 dev eth0 proto dhcp scope link src 10.0.2.15 metric 100
+	83.149.37.0/24 dev eth0 proto kernel scope link src 83.149.37.54
+	172.16.10.0/24 dev eth0 scope link metric 100
+	178.47.119.0/24 dev eth0 proto kernel scope link src 178.47.119.88
+	root@vagrant:~#
+
+	root@vagrant:~# route -n
+	Kernel IP routing table
+	Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+	0.0.0.0         10.0.2.2        0.0.0.0         UG    100    0        0 eth0
+	10.0.2.0        0.0.0.0         255.255.255.0   U     0      0        0 eth0
+	10.0.2.2        0.0.0.0         255.255.255.255 UH    100    0        0 eth0
+	83.149.37.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+	172.16.10.0     0.0.0.0         255.255.255.0   U     100    0        0 eth0
+	178.47.119.0    0.0.0.0         255.255.255.0   U     0      0        0 eth0
+	root@vagrant:~#
 
 ### 3. Проверьте открытые TCP порты в Ubuntu, какие протоколы и приложения используют эти порты? Приведите несколько примеров.
 
