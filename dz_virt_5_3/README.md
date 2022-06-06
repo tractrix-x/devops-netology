@@ -39,7 +39,7 @@ Hey, Netology
 	docker login --username xtractrix
 	docker push xtractrix/nginx:v1
 	
-	ссылка на репозиторий <https://hub.docker.com/repository/docker/xtractrix/nginx/tags?page=1&ordering=last_updated>
+	ссылка на репозиторий "https://hub.docker.com/repository/docker/xtractrix/nginx/tags?page=1&ordering=last_updated"
 
 
 ### Задача 2
