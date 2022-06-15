@@ -16,7 +16,7 @@
 	psql
 	\l
 
-(https://github.com/tractrix-x/devops-netology/blob/dz_db_6_2/dz_db_6_2/dz6_2-1.jpg)
+(dz_db_6_2/dz_db_6_2/dz6_2-1.jpg)
 
 
 ### Задача 2
