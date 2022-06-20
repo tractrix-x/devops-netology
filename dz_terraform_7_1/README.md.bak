@@ -58,27 +58,27 @@
 
 Установите терраформ при помощи менеджера пакетов используемого в вашей операционной системе. В виде результата этой задачи приложите вывод команды terraform --version.
 
-	apt install unzip wget
-	wget https://releases.hashicorp.com/terraform/1.1.7/terraform_1.1.7_linux_amd64.zip
-	unzip terraform_*_linux_amd64.zip
-	sudo mv terraform /usr/local/bin/
-	terraform -version
+apt install unzip wget
+wget https://releases.hashicorp.com/terraform/1.1.7/terraform_1.1.7_linux_amd64.zip
+unzip terraform_*_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+terraform -version
 
 ![dz7_1_2-1](/dz_terraform_7_1/7_1_2-1.jpg)	
 
-	установка автоподстановок
-	terraform -install-autocomplete
+установка автоподстановок
+terraform -install-autocomplete
 
 ### Задача 3. Поддержка легаси кода.
 В какой-то момент вы обновили терраформ до новой версии, например с 0.12 до 0.13. А код одного из проектов настолько устарел, что не может работать с версией 0.13. В связи с этим необходимо сделать так, чтобы вы могли одновременно использовать последнюю версию терраформа установленную при помощи штатного менеджера пакетов и устаревшую версию 0.12.
 
 В виде результата этой задачи приложите вывод --version двух версий терраформа доступных на вашем компьютере или виртуальной машине.
 
-	mkdir terraform_old
-	cd terraform_old/
-	wget https://releases.hashicorp.com/terraform/1.1.6/terraform_1.1.6_linux_amd64.zip
-	unzip terraform_1.1.6_linux_amd64.zip
-	создаем линк
-	sudo ln -s /home/bil/terraform_old/terraform /usr/local/bin/terraform_old
+mkdir terraform_old
+cd terraform_old/
+wget https://releases.hashicorp.com/terraform/1.1.6/terraform_1.1.6_linux_amd64.zip
+unzip terraform_1.1.6_linux_amd64.zip
+создаем линк
+sudo ln -s /home/bil/terraform_old/terraform /usr/local/bin/terraform_old
 
 ![dz7_1_3-1](/dz_terraform_7_1/7_1_3-1.jpg)	
